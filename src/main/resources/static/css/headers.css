@@ -1,0 +1,29 @@
+.form-control-dark {
+  border-color: var(--bs-gray);
+}
+.form-control-dark:focus {
+  border-color: #fff;
+  box-shadow: 0 0 0 .25rem rgba(255, 255, 255, .25);
+}
+
+.text-small {
+  font-size: 85%;
+}
+
+.dropdown-toggle:not(:focus) {
+  outline: 0;
+}
+
+.nav-icon {
+  cursor: pointer;
+  transition: fill 0.2s ease;
+}
+
+.nav-link:hover .nav-icon {
+  fill: #ffc107; /* hover color */
+}
+
+.nav-link:hover {
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 4px;
+}
