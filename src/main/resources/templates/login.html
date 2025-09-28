@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .login-body {
+            height: 75vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+        }
+        .login-card {
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background-color: #fff;
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-card .form-control {
+            margin-bottom: 1rem;
+        }
+        .login-card .forgot-password {
+            display: block;
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+        .login-card .register-btn {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+
+    <div th:replace="fragments/header :: siteHeader"></div>
+<div class="login-body">
+<div class="login-card">
+    <h3 class="text-center mb-4">Login</h3>
+    <form>
+        <input type="text" class="form-control" placeholder="Username" required>
+        <input type="password" class="form-control" placeholder="Password" required>
+
+        <!-- Forgot password link below password -->
+        <a href="#" class="forgot-password text-decoration-none text-center">Forgot password?</a>
+
+        <!-- Login button below link -->
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+
+        <!-- Register button -->
+        <div class="text-center register-btn">
+            <span>Don't have an account? </span>
+            <a href="#" class="btn btn-outline-secondary btn-sm">Register</a>
+        </div>
+    </form>
+</div>
+</div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
