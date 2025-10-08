@@ -9,10 +9,11 @@ public class User {
     private String password;
     private String phone;
     private Address address;
+    private boolean isGuest;
 
     public User() {}
 
-    public User(int id, String firstName, String lastName, String email, String password, String phone, Address address) {
+    public User(int id, String firstName, String lastName, String email, String password, String phone, Address address, boolean isGuest) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -20,6 +21,7 @@ public class User {
         this.password = password;
         this.phone = phone;
         this.address = address;
+        this.isGuest = isGuest;
     }
 
     public int getId() {
@@ -76,5 +78,13 @@ public class User {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public boolean isGuest() {
+        return isGuest;
+    }
+
+    public void setGuest(boolean guest) {
+        isGuest = guest;
     }
 }
