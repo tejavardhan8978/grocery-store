@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>carousel</title>
+    <style>
+        .carousel-control-prev,
+        .carousel-control-next {
+            background-color: #e20000; width: 5vh; height: 5vh; border-radius: 50%; top: 50%; transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body th:fragment="carousel">
+
+<div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner" style="padding: 1em;">
+        <div class="carousel-item active">
+            <div th:replace="fragments/carousel-cards :: carouselCards"></div>
+        </div>
+        <div class="carousel-item">
+            <div th:replace="fragments/carousel-cards :: carouselCards"></div>
+        </div>
+        <div class="carousel-item">
+            <div th:replace="fragments/carousel-cards :: carouselCards"></div>
+        </div>
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev"
+    style="background-color: #2c2b2b; width: 5vh; height: 5vh; border-radius: 50%; top: 50%; transform: translateY(-50%);">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next"
+    style="background-color: #2c2b2b; width: 5vh; height: 5vh; border-radius: 50%; top: 50%; transform: translateY(-50%);">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+
+</body>
+</html>

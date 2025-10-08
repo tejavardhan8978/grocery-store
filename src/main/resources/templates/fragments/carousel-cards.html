@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Grocery Ingredient Cards</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body th:fragment="carouselCards">
+
+<div class="cards-wrapper" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 1em; padding: 1em;">
+
+  <!-- Card 1 -->
+  <div class="card"
+       style="margin: 0 0.5em; width: 18rem; box-shadow: 2px 6px 8px rgba(22,22,26,0.18); border: none; border-radius: 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;"
+       onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='4px 8px 16px rgba(22,22,26,0.3)';"
+       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='2px 6px 8px rgba(22,22,26,0.18)';">
+    <img src="https://media.post.rvohealth.io/wp-content/uploads/2020/09/AN313-Tomatoes-732x549-Thumb.jpg"
+         class="card-img-top" alt="Fresh Tomatoes"
+         style="width:100%; height:180px; object-fit:cover; border-top-left-radius:10px; border-top-right-radius:10px;">
+    <div class="card-body" style="text-align:center;">
+      <h5 class="card-title">Fresh Tomatoes</h5>
+      <p class="card-text">Juicy and ripe, perfect for sauces, salads, or slicing fresh on sandwiches.</p>
+      <a href="#" class="btn btn-primary" style="border-radius: 20px;">Add to Cart</a>
+    </div>
+  </div>
+
+  <!-- Card 2 -->
+  <div class="card"
+       style="margin: 0 0.5em; width: 18rem; box-shadow: 2px 6px 8px rgba(22,22,26,0.18); border: none; border-radius: 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;"
+       onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='4px 8px 16px rgba(22,22,26,0.3)';"
+       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='2px 6px 8px rgba(22,22,26,0.18)';">
+    <img src="https://www.purinamills.com/getmedia/25f52cb7-02ee-4f18-8db8-8fd2c831629d/2018_AN_Flock_Basket-of-colored-eggs-tile-image-for-web-article.jpg?width=480&height=480&ext=.jpg"
+         class="card-img-top" alt="Farm Fresh Eggs"
+         style="width:100%; height:180px; object-fit:cover; border-top-left-radius:10px; border-top-right-radius:10px;">
+    <div class="card-body" style="text-align:center;">
+      <h5 class="card-title">Farm Fresh Eggs</h5>
+      <p class="card-text">Grade A brown eggs sourced from local farms, ideal for baking or breakfast.</p>
+      <a href="#" class="btn btn-primary" style="border-radius: 20px;">Add to Cart</a>
+    </div>
+  </div>
+
+  <!-- Card 3 -->
+  <div class="card"
+       style="margin: 0 0.5em; width: 18rem; box-shadow: 2px 6px 8px rgba(22,22,26,0.18); border: none; border-radius: 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;"
+       onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='4px 8px 16px rgba(22,22,26,0.3)';"
+       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='2px 6px 8px rgba(22,22,26,0.18)';">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7NFLhHg2-VvSj-bxC2nfVGFbg9xm7dL1Mlw&s"
+         class="card-img-top" alt="Mixed Nuts"
+         style="width:100%; height:180px; object-fit:cover; border-top-left-radius:10px; border-top-right-radius:10px;">
+    <div class="card-body" style="text-align:center;">
+      <h5 class="card-title">Assorted Nuts</h5>
+      <p class="card-text">A healthy mix of almonds, cashews, and walnuts — perfect for snacking or baking.</p>
+      <a href="#" class="btn btn-primary" style="border-radius: 20px;">Add to Cart</a>
+    </div>
+  </div>
+
+<!--  &lt;!&ndash; Card 4 &ndash;&gt;-->
+<!--  <div class="card"-->
+<!--       style="margin: 0 0.5em; width: 18rem; box-shadow: 2px 6px 8px rgba(22,22,26,0.18); border: none; border-radius: 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;"-->
+<!--       onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='4px 8px 16px rgba(22,22,26,0.3)';"-->
+<!--       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='2px 6px 8px rgba(22,22,26,0.18)';">-->
+<!--    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1e/Fresh_green_spinach.jpg"-->
+<!--         class="card-img-top" alt="Spinach Leaves"-->
+<!--         style="width:100%; height:180px; object-fit:cover; border-top-left-radius:10px; border-top-right-radius:10px;">-->
+<!--    <div class="card-body" style="text-align:center;">-->
+<!--      <h5 class="card-title">Fresh Spinach</h5>-->
+<!--      <p class="card-text">Crisp, leafy greens full of iron and vitamins — great for salads or smoothies.</p>-->
+<!--      <a href="#" class="btn btn-primary" style="border-radius: 20px;">Add to Cart</a>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  &lt;!&ndash; Card 5 &ndash;&gt;-->
+<!--  <div class="card"-->
+<!--       style="margin: 0 0.5em; width: 18rem; box-shadow: 2px 6px 8px rgba(22,22,26,0.18); border: none; border-radius: 10px; transition: transform 0.3s ease, box-shadow 0.3s ease;"-->
+<!--       onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='4px 8px 16px rgba(22,22,26,0.3)';"-->
+<!--       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='2px 6px 8px rgba(22,22,26,0.18)';">-->
+<!--    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Golden_honey_with_honey_dipper.jpg"-->
+<!--         class="card-img-top" alt="Pure Honey"-->
+<!--         style="width:100%; height:180px; object-fit:cover; border-top-left-radius:10px; border-top-right-radius:10px;">-->
+<!--    <div class="card-body" style="text-align:center;">-->
+<!--      <h5 class="card-title">Pure Honey</h5>-->
+<!--      <p class="card-text">Raw, golden honey sourced from wildflowers — a natural sweetener full of flavor.</p>-->
+<!--      <a href="#" class="btn btn-primary" style="border-radius: 20px;">Add to Cart</a>-->
+<!--    </div>-->
+<!--  </div>-->
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
