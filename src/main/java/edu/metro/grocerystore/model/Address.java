@@ -1,20 +1,47 @@
 package edu.metro.grocerystore.model;
 
-public class Address {
+import jakarta.persistence.*;
 
-    private int id;
+@Entity
+@Table(name="addresses")
+public class Address {
+    //https://docs.hibernate.org/orm/6.6/introduction/html_single/#primary-key-column-mappings
+    //For letting me know what I could use for postgre auto increment in generated value  https://www.geeksforgeeks.org/advance-java/hibernate-generatedvalue-annotation-in-jpa/
+
+
+    @Id
+    @Column(name="addressid")
+    private Integer addressid;
+
+    @Column(name="street")
     private String street;
+
+    @Column(name="city")
     private String city;
+
+    @Column(name="state")
     private String state;
+
+    @Column(name="zip")
     private String zip;
+
+    @Column(name="country")
     private String country;
+
+    @Column(name="userid")
+    private Integer userid;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userid", nullable = false,insertable=false, updatable=false)
+    @MapsId
+    private User appusers;
 
     public Address() {
 
     }
 
-    public Address(int id, String street, String city, String state, String zip, String country) {
-        this.id = id;
+    public Address(int userid, String street, String city, String state, String zip, String country) {
+        this.userid = userid;
         this.street = street;
         this.city = city;
         this.state = state;
@@ -22,12 +49,12 @@ public class Address {
         this.country = country;
     }
 
-    public int getId() {
-        return id;
+    public Integer getId() {
+        return userid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int userid) {
+        this.userid = userid;
     }
 
     public String getStreet() {
