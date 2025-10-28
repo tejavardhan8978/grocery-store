@@ -4,18 +4,21 @@ import edu.metro.grocerystore.model.Address;
 
 public class UserDTO {
 
-    private int id;
+
+    private Integer id;
     private String firstName;
     private String lastName;
     private String email;
     private String phone;
     private Address address;
     private boolean isGuest;
+    private boolean isEmployee;
+    private boolean isAdmin;
 
     public UserDTO() {
     }
 
-    public UserDTO(int id, String firstName, String lastName, String email, String phone, Address address, boolean isGuest) {
+    public UserDTO(int id, String firstName, String lastName, String email, String phone, Address address, boolean isGuest, boolean isEmployee, boolean isAdmin) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -23,6 +26,8 @@ public class UserDTO {
         this.phone = phone;
         this.address = address;
         this.isGuest = isGuest;
+        this.isEmployee = isEmployee;
+        this.isAdmin = isAdmin;
     }
 
     public boolean isGuest() {
@@ -73,11 +78,19 @@ public class UserDTO {
         this.firstName = firstName;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
+
+    public boolean isEmployee() {return isEmployee;}
+
+    public void setEmployee(boolean employee) {isEmployee = employee;}
+
+    public boolean isAdmin() {return isAdmin;}
+
+    public void setAdmin(boolean admin) {isAdmin = admin;}
 }

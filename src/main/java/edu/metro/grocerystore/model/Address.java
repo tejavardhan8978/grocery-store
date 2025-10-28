@@ -10,7 +10,7 @@ public class Address {
 
 
     @Id
-    @Column(name="addressid")
+    @Column(name="address_id")
     private Integer addressid;
 
     @Column(name="street")
@@ -28,20 +28,18 @@ public class Address {
     @Column(name="country")
     private String country;
 
-    @Column(name="userid")
-    private Integer userid;
-
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userid", nullable = false,insertable=false, updatable=false)
-    @MapsId
-    private User appusers;
+    @JoinColumn(name = "user_id", nullable = false,insertable=false, updatable=false)
+    private User users;
+
+
 
     public Address() {
 
     }
 
-    public Address(int userid, String street, String city, String state, String zip, String country) {
-        this.userid = userid;
+    public Address(Integer userid, String street, String city, String state, String zip, String country) {
+        this.addressid = userid;
         this.street = street;
         this.city = city;
         this.state = state;
@@ -50,11 +48,11 @@ public class Address {
     }
 
     public Integer getId() {
-        return userid;
+        return addressid;
     }
 
     public void setId(int userid) {
-        this.userid = userid;
+        this.addressid = userid;
     }
 
     public String getStreet() {

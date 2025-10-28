@@ -2,16 +2,19 @@ package edu.metro.grocerystore.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 // https://stackoverflow.com/a/75648759 - Don't use SQL/postgresql keywords then everything will work :)
 // Keyword appendix https://www.postgresql.org/docs/current/sql-keywords-appendix.html
-@Table(name="appusers")
+@Table(name="users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="userid",insertable=false, updatable=false)
+    @Column(name="user_id", insertable=false, updatable=false)
     private Integer userid;
 
     @Column(name = "first_name")
@@ -38,12 +41,16 @@ public class User {
     @Column(name = "is_admin")
     private boolean isAdmin;
 
-    @OneToOne(mappedBy = "appusers")
+    @OneToOne(mappedBy = "users")
     private Address address;
 
 
-    @OneToOne(mappedBy = "appusers")
+    @OneToOne(mappedBy = "users")
     private Cart cart = new Cart();
+
+    @OneToMany(mappedBy = "users")
+    private List<Order> order = new ArrayList<>();
+
 
     public User() {}
 
@@ -124,5 +131,7 @@ public class User {
     public void setEmployee(boolean employee) {isEmployee = employee;}
 
     public Cart getCart() {return cart;}
+
+    public List<Order> getOrder() {return order;}
 
 }

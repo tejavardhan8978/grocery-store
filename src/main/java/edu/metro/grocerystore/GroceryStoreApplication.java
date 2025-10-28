@@ -1,7 +1,7 @@
 package edu.metro.grocerystore;
 
 import edu.metro.grocerystore.model.Cart;
-import edu.metro.grocerystore.model.Product;
+import edu.metro.grocerystore.model.CartItem;
 import edu.metro.grocerystore.model.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +16,7 @@ public class GroceryStoreApplication {
         System.out.println("Hello World!");
         User testUser = new User();
         Cart testCart = testUser.getCart();
-        List<Product> cartList = testCart.getCartItems();
+        List<CartItem> cartList = testCart.getCartItems();
         //cartList.add(); //Add a Product to the cart by (database) productid in products table
 
         //Things to note: lists can only be objects, List<int> won't work, but we get the following error trying to use List<Integer>
