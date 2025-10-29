@@ -60,7 +60,7 @@
         <!-- Register button -->
         <div class="text-center register-btn">
             <span>Don't have an account? </span>
-            <a href="#" class="btn btn-outline-secondary btn-sm">Register</a>
+            <a th:href="@{/register}" class="btn btn-outline-secondary btn-sm">Register</a>
         </div>
     </form>
     <p th:if="${error}"  th:text="${error}" style="color:red; text-align: center"></p>

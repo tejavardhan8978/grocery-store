@@ -2,15 +2,16 @@ package edu.metro.grocerystore.model;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
 
 @Entity
 // https://stackoverflow.com/a/75648759 - Don't use SQL/postgresql keywords then everything will work :)
 // Keyword appendix https://www.postgresql.org/docs/current/sql-keywords-appendix.html
 @Table(name="users")
-public class User {
+public class User implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +24,7 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "password")
@@ -40,16 +41,6 @@ public class User {
 
     @Column(name = "is_admin")
     private boolean isAdmin;
-
-    @OneToOne(mappedBy = "users")
-    private Address address;
-
-
-    @OneToOne(mappedBy = "users")
-    private Cart cart = new Cart();
-
-    @OneToMany(mappedBy = "users")
-    private List<Order> order = new ArrayList<>();
 
 
     public User() {}
@@ -70,7 +61,7 @@ public class User {
         return userid;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.userid = id;
     }
 
@@ -129,9 +120,5 @@ public class User {
     public boolean isEmployee() {return isEmployee;}
 
     public void setEmployee(boolean employee) {isEmployee = employee;}
-
-    public Cart getCart() {return cart;}
-
-    public List<Order> getOrder() {return order;}
 
 }

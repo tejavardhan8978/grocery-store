@@ -30,13 +30,10 @@ public class Order {
 
     }
 
-
-    //TODO: Wrong to do it this way?
-    public Order(User user){
-        //Iterate through cart items and total?
-        user.getCart().getTotal();
-
-
+    public Order(User user, OrderStatus status){
+        this.users = user;
+        this.orderstatus = status;
+        this.createdAt = Instant.now();
     }
 
 

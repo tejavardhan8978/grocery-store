@@ -1,4 +1,4 @@
-package edu.metro.grocerystore;
+package edu.metro.grocerystore.DTO;
 
 import edu.metro.grocerystore.model.Address;
 

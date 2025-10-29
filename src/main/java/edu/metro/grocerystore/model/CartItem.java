@@ -20,11 +20,10 @@ public class CartItem {
     //Constructors
     public CartItem() {}
 
-
-    //TODO: Not sure we can use it in this way
     public CartItem(Product product) {
-        //this.productId = product.productID;
-
+        if (product != null) {
+            this.productId = product.getProductId();
+        }
     }
 
 

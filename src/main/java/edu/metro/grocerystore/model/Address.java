@@ -3,7 +3,7 @@ package edu.metro.grocerystore.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="addresses")
+@Table(name="address")
 public class Address {
     //https://docs.hibernate.org/orm/6.6/introduction/html_single/#primary-key-column-mappings
     //For letting me know what I could use for postgre auto increment in generated value  https://www.geeksforgeeks.org/advance-java/hibernate-generatedvalue-annotation-in-jpa/

@@ -15,46 +15,60 @@
         <div class="card-body p-4">
             <h3 class="text-center mb-4" style="font-weight: 600; color: #333;">Create Account</h3>
 
-            <form>
+            <!-- Display error message if any -->
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Display success message if any -->
+            <div th:if="${success}" class="alert alert-success" role="alert">
+                <span th:text="${success}"></span>
+            </div>
+
+            <form th:action="@{/register}" th:object="${user}" method="post">
                 <!-- First Name -->
                 <div class="mb-3">
                     <label for="firstName" class="form-label" style="font-weight: 500;">First Name</label>
-                    <input type="text" class="form-control" id="firstName" placeholder="Enter your first name"
+                    <input type="text" class="form-control" id="firstName" th:field="*{firstName}" 
+                           placeholder="Enter your first name" required
                            style="border-radius: 8px; border: 1px solid #ccc;">
                 </div>
 
                 <!-- Last Name -->
                 <div class="mb-3">
                     <label for="lastName" class="form-label" style="font-weight: 500;">Last Name</label>
-                    <input type="text" class="form-control" id="lastName" placeholder="Enter your last name"
+                    <input type="text" class="form-control" id="lastName" th:field="*{lastName}" 
+                           placeholder="Enter your last name" required
                            style="border-radius: 8px; border: 1px solid #ccc;">
                 </div>
 
                 <!-- Email -->
                 <div class="mb-3">
                     <label for="email" class="form-label" style="font-weight: 500;">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Enter your email"
+                    <input type="email" class="form-control" id="email" th:field="*{email}" 
+                           placeholder="Enter your email" required
                            style="border-radius: 8px; border: 1px solid #ccc;">
                 </div>
 
                 <!-- Password -->
                 <div class="mb-3">
                     <label for="password" class="form-label" style="font-weight: 500;">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Enter your password"
+                    <input type="password" class="form-control" id="password" th:field="*{password}" 
+                           placeholder="Enter your password" required
                            style="border-radius: 8px; border: 1px solid #ccc;">
                 </div>
 
                 <!-- Phone -->
                 <div class="mb-3">
                     <label for="phone" class="form-label" style="font-weight: 500;">Phone Number</label>
-                    <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number"
+                    <input type="tel" class="form-control" id="phone" th:field="*{phone}" 
+                           placeholder="Enter your phone number"
                            style="border-radius: 8px; border: 1px solid #ccc;">
                 </div>
 
                 <!-- Submit -->
                 <div class="d-grid">
-                    <button type="button" class="btn btn-primary"
-                            th:onclick="window.location.href='@{/home}'"
+                    <button type="submit" class="btn btn-primary"
                             style="border-radius: 8px; background-color: #007bff; border: none; font-weight: 500; transition: background-color 0.3s;"
                             onmouseover="this.style.backgroundColor='#0056b3';"
                             onmouseout="this.style.backgroundColor='#007bff';">
@@ -64,7 +78,7 @@
             </form>
 
             <p class="text-center mt-3" style="font-size: 0.9rem; color: #555;">
-                Already have an account? <a href="#" style="color: #007bff; text-decoration: none;"
+                Already have an account? <a th:href="@{/login}" style="color: #007bff; text-decoration: none;"
                                             onmouseover="this.style.textDecoration='underline';"
                                             onmouseout="this.style.textDecoration='none';">Log in</a>
             </p>
