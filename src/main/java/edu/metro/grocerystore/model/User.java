@@ -3,6 +3,7 @@ package edu.metro.grocerystore.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 @Entity
@@ -41,6 +42,12 @@ public class User implements Serializable {
 
     @Column(name = "is_admin")
     private boolean isAdmin;
+
+    @Column(name = "is_active")
+    private boolean isActive;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user_id")
+    private List<Order> orders;
 
 
     public User() {}
