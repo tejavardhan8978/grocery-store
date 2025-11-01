@@ -15,12 +15,10 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user_id;
+    private User users;
 
     @Column(name="created_at")
-    private Instant createdAt;
-
-
+    Instant createdAt;
 
     //Ref: https://medium.com/@iam03rv/best-way-to-map-an-enum-type-with-jpa-and-hibernate-with-examples-9974c856f33d
     @Enumerated(EnumType.STRING)
@@ -33,13 +31,10 @@ public class Order {
     }
 
     public Order(User user, OrderStatus status){
-        this.user_id = user;
+        this.users = user;
         this.orderstatus = status;
         this.createdAt = Instant.now();
     }
 
-    public Instant getCreatedAt() {return createdAt;}
-
-    public void setCreatedAt(Instant createdAt) {this.createdAt = createdAt;}
 
 }
