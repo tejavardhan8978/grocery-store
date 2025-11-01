@@ -1,56 +1,215 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Footer</title>
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .footer-section {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+        }
+        .footer-heading {
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .footer-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-link:hover {
+            color: #3498db;
+        }
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .social-icon:hover {
+            transform: translateY(-2px);
+            opacity: 0.8;
+        }
+        .newsletter-form {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+        .footer-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #3498db, transparent);
+            margin: 2rem 0;
+        }
+        .footer-bottom {
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
 <body>
-<!-- Footer Fragment -->
-<footer th:fragment="siteFooter" class="bg-body-tertiary text-center">
+<!-- Enhanced Footer Fragment -->
+<footer th:fragment="siteFooter" class="footer-section">
+    <div class="container py-5">
+        <div class="row">
+            <!-- Company Info -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h5 class="footer-heading">
+                    <i class="bi bi-shop me-2"></i>Metro Grocery Store
+                </h5>
+                <p class="text-muted">Your trusted neighborhood grocery store, bringing fresh quality products and exceptional service to your doorstep since 2020.</p>
+                <div class="d-flex mt-3">
+                    <a href="#" class="social-icon" style="background-color: #3b5998;">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="#" class="social-icon" style="background-color: #1da1f2;">
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                    <a href="#" class="social-icon" style="background-color: #e4405f;">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                    <a href="#" class="social-icon" style="background-color: #0077b5;">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                </div>
+            </div>
 
-    <!-- Grid container -->
-    <div class="container p-4 pb-0">
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="footer-heading">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/" class="footer-link"><i class="bi bi-house me-2"></i>Home</a></li>
+                    <li class="mb-2"><a href="/products" class="footer-link"><i class="bi bi-grid me-2"></i>All Products</a></li>
+                    <li class="mb-2" th:each="category, categoryStat : ${productCategories}" th:if="${categoryStat.index < 4}">
+                        <a th:href="@{'/products/category/' + ${category.categoryId}}" class="footer-link">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            <span th:text="${category.categoryName}">Category</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-        <!-- Section: Social media -->
-        <section class="mb-4">
-            <!-- Facebook -->
-            <a class="btn text-white btn-floating m-1" style="background-color: #3b5998;" href="#!" role="button">
-                <i class="fab fa-facebook-f"></i>
-            </a>
+            <!-- Customer Service -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="footer-heading">Customer Service</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="footer-link"><i class="bi bi-headset me-2"></i>Contact Us</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link"><i class="bi bi-truck me-2"></i>Delivery Info</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link"><i class="bi bi-arrow-return-left me-2"></i>Returns</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link"><i class="bi bi-question-circle me-2"></i>FAQ</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link"><i class="bi bi-shield-check me-2"></i>Privacy Policy</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link"><i class="bi bi-file-text me-2"></i>Terms of Service</a></li>
+                </ul>
+            </div>
 
-            <!-- Twitter -->
-            <a class="btn text-white btn-floating m-1" style="background-color: #55acee;" href="#!" role="button">
-                <i class="fab fa-twitter"></i>
-            </a>
+            <!-- Contact Info -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5 class="footer-heading">Contact Info</h5>
+                <div class="text-muted">
+                    <div class="mb-2">
+                        <i class="bi bi-geo-alt me-2"></i>
+                        <small>123 Grocery Street<br>Metro City, MC 12345</small>
+                    </div>
+                    <div class="mb-2">
+                        <i class="bi bi-telephone me-2"></i>
+                        <small>(555) 123-4567</small>
+                    </div>
+                    <div class="mb-2">
+                        <i class="bi bi-envelope me-2"></i>
+                        <small>info@metrogrocery.com</small>
+                    </div>
+                    <div class="mb-2">
+                        <i class="bi bi-clock me-2"></i>
+                        <small>Mon-Sun: 7AM - 10PM</small>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Google -->
-            <a class="btn text-white btn-floating m-1" style="background-color: #dd4b39;" href="#!" role="button">
-                <i class="fab fa-google"></i>
-            </a>
+            <!-- Newsletter -->
+            <div class="col-lg-3 col-md-12 mb-4">
+                <div class="newsletter-form">
+                    <h5 class="footer-heading">Stay Updated</h5>
+                    <p class="text-muted small">Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
+                    <form class="mt-3">
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="d-flex align-items-center mt-3">
+                        <i class="bi bi-shield-check text-success me-2"></i>
+                        <small class="text-muted">We respect your privacy</small>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <!-- Instagram -->
-            <a class="btn text-white btn-floating m-1" style="background-color: #ac2bac;" href="#!" role="button">
-                <i class="fab fa-instagram"></i>
-            </a>
+        <!-- Divider -->
+        <div class="footer-divider"></div>
 
-            <!-- LinkedIn -->
-            <a class="btn text-white btn-floating m-1" style="background-color: #0082ca;" href="#!" role="button">
-                <i class="fab fa-linkedin-in"></i>
-            </a>
-
-            <!-- Github -->
-            <a class="btn text-white btn-floating m-1" style="background-color: #333333;" href="#!" role="button">
-                <i class="fab fa-github"></i>
-            </a>
-        </section>
-        <!-- Section: Social media -->
-
+        <!-- Features Section -->
+        <div class="row text-center mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="bi bi-truck display-6 text-primary mb-2"></i>
+                    <h6 class="footer-heading mb-1">Free Delivery</h6>
+                    <small class="text-muted">On orders over $50</small>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="bi bi-shield-check display-6 text-success mb-2"></i>
+                    <h6 class="footer-heading mb-1">Fresh Guarantee</h6>
+                    <small class="text-muted">100% fresh products</small>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="bi bi-headset display-6 text-warning mb-2"></i>
+                    <h6 class="footer-heading mb-1">24/7 Support</h6>
+                    <small class="text-muted">Always here to help</small>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="bi bi-credit-card display-6 text-info mb-2"></i>
+                    <h6 class="footer-heading mb-1">Secure Payment</h6>
+                    <small class="text-muted">Safe & secure checkout</small>
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- Grid container -->
 
-    <!-- Copyright -->
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
-        © 2025 Copyright:
-        <a class="text-body" href="https://mdbootstrap.com/">Grocery Store</a>
+    <!-- Footer Bottom -->
+    <div class="footer-bottom py-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted">
+                        &copy; 2025 Metro Grocery Store. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end justify-content-center align-items-center mt-2 mt-md-0">
+                        <span class="text-muted me-3">We Accept:</span>
+                        <i class="bi bi-credit-card text-primary me-2"></i>
+                        <i class="bi bi-paypal text-primary me-2"></i>
+                        <span class="badge bg-primary">VISA</span>
+                        <span class="badge bg-warning text-dark ms-1">MC</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- Copyright -->
-
 </footer>
 </body>
 </html>

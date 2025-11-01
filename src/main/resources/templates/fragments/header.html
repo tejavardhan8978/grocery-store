@@ -48,47 +48,88 @@
                         </a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link text-white dropdown-toggle d-flex align-items-center"
+                        <a class="nav-link text-white dropdown-toggle d-flex flex-column align-items-center"
                            href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
-                           style="gap: 0.25rem;">
+                           style="min-width: 80px; position: relative;">
                             <!-- Icon (same as original) -->
-                            <svg class="bi d-block nav-icon" width="24" height="24" aria-hidden="true" fill="white">
+                            <svg class="bi d-block mb-1 nav-icon" width="24" height="24" aria-hidden="true" fill="white">
                                 <use xlink:href="/icons/bootstrap-icons.svg#grid"></use>
                             </svg>
                             <!-- Text -->
-<!--                            Products-->
+                            <span style="font-size: 0.875rem;">Products</span>
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="list-style: none; padding: 0;">
-                            <ul>
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                            </ul>
-                            <ul>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                            </ul>
-                            <ul>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                                <li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-                            </ul>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="list-style: none; padding: 15px; min-width: 600px; max-height: 400px; overflow-y: auto;">
+                            <h6 class="dropdown-header text-center mb-3" style="font-size: 1.1rem; font-weight: bold;">Categories</h6>
+                            
+                            <div class="row g-2">
+                                <div th:each="category : ${productCategories}" class="col-6 col-md-4 col-lg-3">
+                                    <a th:href="@{'/products/category/' + ${category.categoryId}}" 
+                                       class="dropdown-item text-center p-3 border rounded" 
+                                       style="text-decoration: none; transition: all 0.3s ease; border: 1px solid #e0e0e0; margin-bottom: 8px; display: block; height: 120px;"
+                                       onmouseover="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)';"
+                                       onmouseout="this.style.backgroundColor='white'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                       
+                                        <!-- Dynamic Icon/Image Display -->
+                                        <div class="mb-2" style="height: 50px; display: flex; align-items: center; justify-content: center;">
+                                            <!-- Show SVG icon if available -->
+                                            <div th:if="${category.categoryIconSvg != null and !#strings.isEmpty(category.categoryIconSvg)}" 
+                                                 style="color: #007bff;">
+                                                <svg class="bi" width="32" height="32" fill="currentColor">
+                                                    <use th:href="@{'/icons/bootstrap-icons.svg#' + ${category.categoryIconSvg}}"></use>
+                                                </svg>
+                                            </div>
+                                            
+                                            <!-- Show image if available and no SVG -->
+                                            <img th:if="${category.categoryImageUrl != null and !#strings.isEmpty(category.categoryImageUrl) and (category.categoryIconSvg == null or #strings.isEmpty(category.categoryIconSvg))}"
+                                                 th:src="${category.categoryImageUrl}" 
+                                                 th:alt="${category.categoryName}"
+                                                 style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">
+                                            
+                                            <!-- Fallback icon if no image or SVG -->
+                                            <div th:if="${(category.categoryIconSvg == null or #strings.isEmpty(category.categoryIconSvg)) and (category.categoryImageUrl == null or #strings.isEmpty(category.categoryImageUrl))}" 
+                                                 style="color: #6c757d;">
+                                                <svg class="bi" width="32" height="32" fill="currentColor">
+                                                    <use href="/icons/bootstrap-icons.svg#grid"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Category Name -->
+                                        <div style="font-size: 0.9rem; font-weight: 500; color: #333; line-height: 1.2;">
+                                            <span th:text="${category.categoryName}">Category Name</span>
+                                        </div>
+                                        
+                                        <!-- Category Description (if available) -->
+                                        <div th:if="${category.categoryDescription != null and !#strings.isEmpty(category.categoryDescription)}" 
+                                             style="font-size: 0.75rem; color: #6c757d; margin-top: 4px; line-height: 1.1;">
+                                            <span th:text="${#strings.abbreviate(category.categoryDescription, 30)}">Description</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- View All Products Link -->
+                            <div class="text-center mt-3 pt-3" style="border-top: 1px solid #e0e0e0;">
+                                <a class="btn btn-outline-primary btn-sm" th:href="@{/products}" 
+                                   style="font-weight: 500; padding: 8px 20px;">
+                                    <svg class="bi me-1" width="16" height="16" fill="currentColor">
+                                        <use href="/icons/bootstrap-icons.svg#grid-3x3-gap"></use>
+                                    </svg>
+                                    View All Products
+                                </a>
+                            </div>
                         </div>
                     </li>
 
                     <li>
-                        <a href="#" class="nav-link text-white">
+                        <a href="#" class="nav-link text-white" th:with="displayUser=${headerUser != null ? headerUser : user}">
                             <svg class="bi d-block mx-auto mb-1 nav-icon" width="24" height="24" aria-hidden="true"
                                  fill="white">
-                                <use xlink:href="/icons/bootstrap-icons.svg#person-video"></use>
+                                <use th:if="${displayUser != null and displayUser.isAdmin()}" xlink:href="/icons/bootstrap-icons.svg#person-video"></use>
+                                <use th:if="${displayUser == null or not displayUser.isAdmin()}" xlink:href="/icons/bootstrap-icons.svg#person"></use>
                             </svg>
-                            Customers
+                            <span th:if="${displayUser != null and displayUser.isAdmin()}" th:text="Customers"></span>
+                            <span th:if="${displayUser == null or not displayUser.isAdmin()}" th:text="Profile"></span>
                         </a>
                     </li>
                 </ul>
@@ -101,19 +142,43 @@
             <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto" role="search">
                 <input type="search" class="form-control" placeholder="Search..." aria-label="Search"/>
             </form>
-            <div th:if="${user != null}">
-                <div class="text-end" th:if="${user.isGuest()}">
+            <div th:with="displayUser=${headerUser != null ? headerUser : user}">
+                <div class="text-end" th:if="${displayUser != null and displayUser.isGuest()}">
                     <a th:href="@{/login}">
                         <button type="button" class="btn btn-light text-dark me-2">Login</button>
                     </a>
-                                    <a th:href="@{/register}">
-                    <button type="button" class="btn btn-primary">Sign-up</button>
-                                    </a>
+                    <a th:href="@{/register}">
+                        <button type="button" class="btn btn-primary">Sign-up</button>
+                    </a>
                 </div>
-                <div class="text-end" th:if="${not user.isGuest()}">
-                    <span class="text-dark me-3">Welcome, <strong th:text="${user.firstName}">User</strong></span>
+                <div class="text-end" th:if="${displayUser != null and not displayUser.isGuest()}">
+                    <span class="text-dark me-3">Welcome, <strong th:text="${displayUser.firstName}">User</strong></span>
+                    
+                    <!-- Admin Mode Toggle Button (only for admin users) -->
+                    <div th:if="${displayUser.isAdmin()}" class="d-inline-block me-2">
+                        <form th:action="@{/admin/toggle-mode}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm" 
+                                    th:classappend="${session.adminMode != null and session.adminMode} ? 'btn-warning' : 'btn-secondary'"
+                                    th:title="${session.adminMode != null and session.adminMode} ? 'Switch to User Mode' : 'Switch to Admin Mode'">
+                                <svg class="bi me-1" width="16" height="16" fill="currentColor">
+                                    <use th:href="${session.adminMode != null and session.adminMode} ? '/icons/bootstrap-icons.svg#person-fill' : '/icons/bootstrap-icons.svg#gear-fill'"></use>
+                                </svg>
+                                <span th:text="${session.adminMode != null and session.adminMode} ? 'User Mode' : 'Admin Mode'">Admin Mode</span>
+                            </button>
+                        </form>
+                    </div>
+                    
                     <a th:href="@{/logout}">
                         <button type="button" class="btn btn-outline-dark">Logout</button>
+                    </a>
+                </div>
+                <!-- Fallback for when no user is available -->
+                <div class="text-end" th:if="${displayUser == null}">
+                    <a th:href="@{/login}">
+                        <button type="button" class="btn btn-light text-dark me-2">Login</button>
+                    </a>
+                    <a th:href="@{/register}">
+                        <button type="button" class="btn btn-primary">Sign-up</button>
                     </a>
                 </div>
             </div>

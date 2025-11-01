@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Admin Dashboard - Grocery Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/headers.css}"/>
+    <style>
+        .admin-welcome {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            border-radius: 15px;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .admin-content {
+            max-width: 600px;
+            padding: 3rem;
+        }
+        
+        .admin-title {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+        
+        .admin-subtitle {
+            font-size: 1.3rem;
+            font-weight: 300;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .coffee-icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        
+        .quick-links {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .quick-link-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .quick-link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .quick-link-icon {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Header -->
+    <div th:replace="~{fragments/header :: siteHeader(${headerUser})}"></div>
+
+    <div class="container mt-4">
+        <!-- Alert Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Admin Welcome Section -->
+        <div class="admin-welcome">
+            <div class="admin-content">
+                <div class="coffee-icon">☕</div>
+                <h1 class="admin-title">Admin Dashboard</h1>
+                <p class="admin-subtitle">
+                    On the drawing board, sipping coffee.
+                </p>
+            </div>
+        </div>
+
+        <!-- Quick Links Section -->
+        <div class="quick-links">
+            <h3 class="text-center mb-4">Quick Administration</h3>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <a th:href="@{/admin/customers}" class="quick-link-card">
+                        <div class="quick-link-icon">👥</div>
+                        <h5>Manage Customers</h5>
+                        <p class="text-muted">View, search, and manage customer accounts</p>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="#" class="quick-link-card" onclick="return false;" style="opacity: 0.5;">
+                        <div class="quick-link-icon">📦</div>
+                        <h5>Products</h5>
+                        <p class="text-muted">Coming soon...</p>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="#" class="quick-link-card" onclick="return false;" style="opacity: 0.5;">
+                        <div class="quick-link-icon">📊</div>
+                        <h5>Reports</h5>
+                        <p class="text-muted">Coming soon...</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Mode Badge -->
+        <div class="text-center mt-4">
+            <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                🔧 Admin Mode Active
+            </span>
+        </div>
+    </div>
+
+    <!-- Include Footer if you have one -->
+    <div th:replace="~{fragments/footer :: siteFooter}" th:if="${@environment.getProperty('footer.enabled', 'false') == 'true'}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

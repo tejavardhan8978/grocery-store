@@ -1,142 +1,145 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Grid</title>
+    <title>Product Grid</title>
+    <style>
+        .product-grid-card {
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+        }
+        .product-grid-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .product-grid-image {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .price-tag {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        .stock-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.75rem;
+        }
+        .out-of-stock {
+            opacity: 0.6;
+            position: relative;
+        }
+        .out-of-stock::after {
+            content: "OUT OF STOCK";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 1;
+        }
+    </style>
 </head>
-<body style="background-color:#f8f9fa;" th:fragment="cardGrid">
+<body>
 
-<div class="container mt-4">
-    <div class="row row-cols-1 row-cols-md-3 g-4" style="margin-top:10px">
-
-        <!-- Card 1 -->
-        <div class="col">
-            <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
-                 onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
-                <img src="https://t3.ftcdn.net/jpg/15/31/54/64/360_F_1531546461_rzJP0LRL9hxrBpoKZc90VM8LXwff062w.jpg" class="card-img-top" alt="Coffee" style="height:200px; object-fit:cover;">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Coffee</h5>
-                    <p class="card-text">Rich and aromatic freshly brewed coffee.</p>
-                    <button class="btn btn-primary">Order</button>
+<!-- Dynamic Product Grid -->
+<div th:fragment="productGrid(products)" class="product-grid">
+    <div class="container">
+        <div class="row" th:if="${products != null and !products.isEmpty()}">
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4" th:each="product, iterStat : ${products}" th:if="${iterStat.index < 12}">
+                <div class="card product-grid-card h-100" th:classappend="${!product.isAvailable()} ? 'out-of-stock' : ''">
+                    <div class="position-relative">
+                        <img th:src="${product.imageUrl != null ? product.imageUrl : 'https://via.placeholder.com/300x200?text=No+Image'}" 
+                             th:alt="${product.name}" 
+                             class="card-img-top product-grid-image">
+                        <span th:if="${product.isLowStock() and product.isAvailable()}" class="badge bg-warning stock-badge">Low Stock</span>
+                        <span th:unless="${product.isAvailable()}" class="badge bg-danger stock-badge">Out of Stock</span>
+                    </div>
+                    <div class="card-body text-center d-flex flex-column">
+                        <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+                        <p class="card-text text-muted flex-grow-1" th:text="${product.description != null ? #strings.abbreviate(product.description, 80) : 'Fresh and quality product'}">Product description...</p>
+                        <div class="mt-auto">
+                            <div class="price-tag mb-2" th:text="'$' + ${#numbers.formatDecimal(product.price, 0, 2)}">$0.00</div>
+                            <button class="btn btn-primary" 
+                                    th:disabled="${!product.isAvailable()}"
+                                    th:classappend="${!product.isAvailable()} ? 'disabled' : ''">
+                                <i class="bi bi-cart-plus"></i> 
+                                <span th:text="${product.isAvailable()} ? 'Add to Cart' : 'Out of Stock'">Add to Cart</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Card 2 -->
-        <div class="col">
-            <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
-                 onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
-                <img src="https://t4.ftcdn.net/jpg/01/53/41/53/360_F_153415341_JBUAbThjrPfBkVygG5aFnw7NmF9bnt8x.jpg" class="card-img-top" alt="Croissant" style="height:200px; object-fit:cover;">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Croissant</h5>
-                    <p class="card-text">Buttery and flaky French pastry.</p>
-                    <button class="btn btn-primary">Order</button>
-                </div>
-            </div>
+        
+        <!-- No products message -->
+        <div th:unless="${products != null and !products.isEmpty()}" class="text-center py-5">
+            <i class="bi bi-basket display-4 text-muted mb-3"></i>
+            <h4 class="text-muted">No products available</h4>
+            <p class="text-muted">Check back soon for our latest products!</p>
         </div>
-
-        <!-- Card 3 -->
-        <div class="col">
-            <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
-                 onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
-                <img src="https://media.istockphoto.com/id/1165125774/photo/transparent-plastic-pasta-bag-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=askYrIUlxrhrf0nEVAFkCBErLCmyMe0UjpyNnPPY4-U=" class="card-img-top" alt="Pasta" style="height:200px; object-fit:cover;">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Pasta</h5>
-                    <p class="card-text">Classic Italian pasta with tomato sauce.</p>
-                    <button class="btn btn-primary">Order</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-    <div class="row row-cols-1 row-cols-md-3 g-4"  style="margin-top:10px">
-
-        <!-- Card 1 -->
-        <div class="col">
-            <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
-                 onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
-                <img src="https://t3.ftcdn.net/jpg/15/31/54/64/360_F_1531546461_rzJP0LRL9hxrBpoKZc90VM8LXwff062w.jpg" class="card-img-top" alt="Coffee" style="height:200px; object-fit:cover;">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Coffee</h5>
-                    <p class="card-text">Rich and aromatic freshly brewed coffee.</p>
-                    <button class="btn btn-primary">Order</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="col">
-            <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
-                 onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
-                <img src="https://t4.ftcdn.net/jpg/01/53/41/53/360_F_153415341_JBUAbThjrPfBkVygG5aFnw7NmF9bnt8x.jpg" class="card-img-top" alt="Croissant" style="height:200px; object-fit:cover;">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Croissant</h5>
-                    <p class="card-text">Buttery and flaky French pastry.</p>
-                    <button class="btn btn-primary">Order</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="col">
-            <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
-                 onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
-                <img src="https://media.istockphoto.com/id/1165125774/photo/transparent-plastic-pasta-bag-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=askYrIUlxrhrf0nEVAFkCBErLCmyMe0UjpyNnPPY4-U=" class="card-img-top" alt="Pasta" style="height:200px; object-fit:cover;">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Pasta</h5>
-                    <p class="card-text">Classic Italian pasta with tomato sauce.</p>
-                    <button class="btn btn-primary">Order</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-    <div class="row row-cols-1 row-cols-md-3 g-4" style="margin-top:10px">
-
-        <!-- Card 1 -->
-        <div class="col">
-            <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
-                 onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
-                <img src="https://t3.ftcdn.net/jpg/15/31/54/64/360_F_1531546461_rzJP0LRL9hxrBpoKZc90VM8LXwff062w.jpg" class="card-img-top" alt="Coffee" style="height:200px; object-fit:cover;">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Coffee</h5>
-                    <p class="card-text">Rich and aromatic freshly brewed coffee.</p>
-                    <button class="btn btn-primary">Order</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="col">
-            <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
-                 onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
-                <img src="https://t4.ftcdn.net/jpg/01/53/41/53/360_F_153415341_JBUAbThjrPfBkVygG5aFnw7NmF9bnt8x.jpg" class="card-img-top" alt="Croissant" style="height:200px; object-fit:cover;">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Croissant</h5>
-                    <p class="card-text">Buttery and flaky French pastry.</p>
-                    <button class="btn btn-primary">Order</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="col">
-            <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
-                 onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
-                <img src="https://media.istockphoto.com/id/1165125774/photo/transparent-plastic-pasta-bag-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=askYrIUlxrhrf0nEVAFkCBErLCmyMe0UjpyNnPPY4-U=" class="card-img-top" alt="Pasta" style="height:200px; object-fit:cover;">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Pasta</h5>
-                    <p class="card-text">Classic Italian pasta with tomato sauce.</p>
-                    <button class="btn btn-primary">Order</button>
-                </div>
-            </div>
-        </div>
-
     </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Legacy static grid for backward compatibility -->
+<div th:fragment="cardGrid" style="background-color:#f8f9fa;">
+    <div class="container mt-4">
+        <div class="row row-cols-1 row-cols-md-3 g-4" style="margin-top:10px">
+            <!-- Card 1 -->
+            <div class="col">
+                <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
+                     onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
+                    <img src="https://t3.ftcdn.net/jpg/15/31/54/64/360_F_1531546461_rzJP0LRL9hxrBpoKZc90VM8LXwff062w.jpg" class="card-img-top" alt="Coffee" style="height:200px; object-fit:cover;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Coffee</h5>
+                        <p class="card-text">Rich and aromatic freshly brewed coffee.</p>
+                        <button class="btn btn-primary">Order</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="col">
+                <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
+                     onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
+                    <img src="https://t4.ftcdn.net/jpg/01/53/41/53/360_F_153415341_JBUAbThjrPfBkVygG5aFnw7NmF9bnt8x.jpg" class="card-img-top" alt="Croissant" style="height:200px; object-fit:cover;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Croissant</h5>
+                        <p class="card-text">Buttery and flaky French pastry.</p>
+                        <button class="btn btn-primary">Order</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="col">
+                <div class="card" style="border:none; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition:transform 0.3s; cursor:pointer;"
+                     onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';">
+                    <img src="https://media.istockphoto.com/id/1165125774/photo/transparent-plastic-pasta-bag-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=askYrIUlxrhrf0nEVAFkCBErLCmyMe0UjpyNnPPY4-U=" class="card-img-top" alt="Pasta" style="height:200px; object-fit:cover;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Pasta</h5>
+                        <p class="card-text">Classic Italian pasta with tomato sauce.</p>
+                        <button class="btn btn-primary">Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
