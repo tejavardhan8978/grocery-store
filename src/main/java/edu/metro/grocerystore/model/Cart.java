@@ -21,7 +21,8 @@ public class Cart {
     //Things to note: lists can only be objects, List<int> won't work
     // BUT if you try List<Integer> the compiler complains about hibernate or JPA or something as not a valid data type,
     //to get around this we could type casting
-    ArrayList<CartItem> cartItem;
+    @OneToMany(mappedBy = "cart")
+    private List<CartItem> cartItem = new ArrayList<>();;
 
 
     // Ref: https://www.geeksforgeeks.org/java/hibernate-primarykeyjoincolumn-annotation/
@@ -40,7 +41,7 @@ public class Cart {
 
     public List<CartItem> getCartItems() {return cartItem;}
 
-    public void setCartItems(ArrayList<CartItem> cartItems) {this.cartItem = cartItems;}
+    public void setCartItems(List<CartItem> cartItems) {this.cartItem = cartItems;}
 
     public boolean addProductById(Integer productId) {
         //add product to user cart sql coding here?

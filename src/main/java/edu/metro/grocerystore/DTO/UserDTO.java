@@ -1,6 +1,10 @@
 package edu.metro.grocerystore.DTO;
 
 import edu.metro.grocerystore.model.Address;
+import edu.metro.grocerystore.model.Order;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDTO {
 
@@ -14,20 +18,27 @@ public class UserDTO {
     private boolean isGuest;
     private boolean isEmployee;
     private boolean isAdmin;
+    private List<Order> orders;
+
+
+    private boolean isActive;
 
     public UserDTO() {
     }
 
-    public UserDTO(int id, String firstName, String lastName, String email, String phone, Address address, boolean isGuest, boolean isEmployee, boolean isAdmin) {
+    public UserDTO(int id, String firstName, String lastName, String email, String phone, Address address, ArrayList<Order> orders, boolean isGuest, boolean isEmployee, boolean isAdmin, boolean isActive) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.address = address;
+        this.orders = orders;
         this.isGuest = isGuest;
         this.isEmployee = isEmployee;
         this.isAdmin = isAdmin;
+        this.isActive = isActive;
+
     }
 
     public boolean isGuest() {
@@ -93,4 +104,21 @@ public class UserDTO {
     public boolean isAdmin() {return isAdmin;}
 
     public void setAdmin(boolean admin) {isAdmin = admin;}
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
 }

@@ -10,6 +10,13 @@ public class CartItem {
     @Column(name="order_id")
     Integer orderId;
 
+    @Column(name="cartItem_id")
+    Integer cartItemId;
+
+    @ManyToOne
+    @JoinColumn(name="cart_id", insertable=false, updatable=false)
+    private Cart cart;
+
     @Column(name="product_id")
     Integer productId;
 
