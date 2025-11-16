@@ -5,7 +5,5 @@ public enum OrderStatus {
     PROCESSING,
     WAITING_FOR_PICKUP,
     COMPLETED,
-    CANCELED,
-    REFUND_PROCESSING,
-    REFUNDED
+    CANCELLED
 }

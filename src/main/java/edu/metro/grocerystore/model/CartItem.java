@@ -7,12 +7,8 @@ import jakarta.persistence.*;
 public class CartItem {
 
     @Id
-    @Column(name="cartitem_id")
-    Integer cartItemId;
-
-    @ManyToOne
-    @JoinColumn(name = "cart_id", insertable = false, updatable = false)
-    private Cart cart_id;
+    @Column(name="order_id")
+    Integer orderId;
 
     @Column(name="product_id")
     Integer productId;

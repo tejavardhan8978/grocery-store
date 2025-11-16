@@ -18,7 +18,7 @@ public class Order {
     private User users;
 
     @Column(name="created_at")
-    private Instant createdAt;
+    Instant createdAt;
 
     //Ref: https://medium.com/@iam03rv/best-way-to-map-an-enum-type-with-jpa-and-hibernate-with-examples-9974c856f33d
     @Enumerated(EnumType.STRING)

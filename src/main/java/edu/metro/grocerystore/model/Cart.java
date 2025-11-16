@@ -21,8 +21,8 @@ public class Cart {
     //Things to note: lists can only be objects, List<int> won't work
     // BUT if you try List<Integer> the compiler complains about hibernate or JPA or something as not a valid data type,
     //to get around this we could type casting
-    @OneToMany(mappedBy = "cart_id")
-    private ArrayList<CartItem> cartItem;
+    ArrayList<CartItem> cartItem;
+
 
     // Ref: https://www.geeksforgeeks.org/java/hibernate-primarykeyjoincolumn-annotation/
     @OneToOne(fetch = FetchType.LAZY)
