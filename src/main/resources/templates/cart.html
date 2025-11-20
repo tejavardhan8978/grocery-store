@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Shopping Cart - Metro Grocery Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/headers.css}"/>
+    <style>
+        .cart-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .cart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .cart-item {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1.5rem 0;
+            transition: background-color 0.3s ease;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .product-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .product-info h5 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-price {
+            color: #28a745;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quantity-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 0.25rem;
+        }
+        
+        .remove-btn {
+            color: #dc3545;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .remove-btn:hover {
+            color: #c82333;
+            transform: scale(1.1);
+        }
+        
+        .cart-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .summary-row:last-child {
+            border-bottom: none;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #333;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            border-top: 2px solid #333;
+        }
+        
+        .checkout-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+        
+        .continue-shopping-btn {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .continue-shopping-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .empty-cart-icon {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-custom {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: siteHeader(${user})}"></div>
+    
+    <!-- Cart Header -->
+    <div class="cart-header">
+        <div class="container">
+            <h1 class="display-4 mb-2">
+                <i class="bi bi-cart3 me-3"></i>Shopping Cart
+            </h1>
+            <p class="lead mb-0" th:if="${cartItemCount > 0}">
+                You have <strong th:text="${cartItemCount}">0</strong> 
+                <span th:text="${cartItemCount == 1 ? 'item' : 'items'}">items</span> in your cart
+            </p>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <!-- Alert Messages -->
+        <div th:if="${error}" class="alert alert-danger alert-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}">Error message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${success}" class="alert alert-success alert-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${success}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <!-- Empty Cart Message -->
+        <div th:if="${cartItems == null || cartItems.isEmpty()}" class="cart-container">
+            <div class="empty-cart">
+                <div class="empty-cart-icon">
+                    <i class="bi bi-cart-x"></i>
+                </div>
+                <h3 class="mb-3">Your cart is empty</h3>
+                <p class="text-muted mb-4">Add some products to your cart and they will appear here.</p>
+                <a th:href="@{/products}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-grid-3x3-gap me-2"></i>Browse Products
+                </a>
+            </div>
+        </div>
+        
+        <!-- Cart Items -->
+        <div th:if="${cartItems != null && !cartItems.isEmpty()}" class="row">
+            <div class="col-lg-8">
+                <div class="cart-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Cart Items</h4>
+                        <form th:action="@{/cart/clear}" method="post" onsubmit="return confirm('Are you sure you want to clear your cart?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i>Clear Cart
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Cart Item -->
+                    <div th:each="item : ${cartItems}" class="cart-item">
+                        <div class="row align-items-center">
+                            <!-- Product Image -->
+                            <div class="col-md-2 col-sm-3 mb-3 mb-md-0">
+                                <img th:src="${item.product.imageUrl != null && !item.product.imageUrl.isEmpty() ? item.product.imageUrl : '/images/products/placeholder.jpg'}" 
+                                     th:alt="${item.product.name}"
+                                     class="product-image">
+                            </div>
+                            
+                            <!-- Product Info -->
+                            <div class="col-md-4 col-sm-9 mb-3 mb-md-0">
+                                <div class="product-info">
+                                    <h5 th:text="${item.product.name}">Product Name</h5>
+                                    <p class="text-muted mb-1" th:text="${item.product.description}">Product description</p>
+                                    <p class="mb-0">
+                                        <span class="badge bg-secondary" th:text="${item.product.category.categoryName}">Category</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Quantity Controls -->
+                            <div class="col-md-3 col-6 mb-3 mb-md-0">
+                                <div class="quantity-controls">
+                                    <form th:action="@{'/cart/update/' + ${item.cartItemId}}" method="post" style="display: inline;">
+                                        <input type="hidden" name="quantity" th:value="${item.quantity - 1}">
+                                        <button type="submit" class="quantity-btn" th:disabled="${item.quantity <= 1}">
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                    </form>
+                                    
+                                    <input type="number" 
+                                           class="quantity-input" 
+                                           th:value="${item.quantity}" 
+                                           min="1" 
+                                           th:max="${item.product.quantity}"
+                                           th:data-item-id="${item.cartItemId}"
+                                           onchange="updateQuantity(this)">
+                                    
+                                    <form th:action="@{'/cart/update/' + ${item.cartItemId}}" method="post" style="display: inline;">
+                                        <input type="hidden" name="quantity" th:value="${item.quantity + 1}">
+                                        <button type="submit" class="quantity-btn" th:disabled="${item.quantity >= item.product.quantity}">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                                <small class="text-muted d-block mt-1">
+                                    <span th:text="${item.product.quantity}">10</span> available
+                                </small>
+                            </div>
+                            
+                            <!-- Price & Remove -->
+                            <div class="col-md-2 col-6 text-end">
+                                <div class="product-price mb-2" th:text="'$' + ${#numbers.formatDecimal(item.subTotal, 1, 2)}">$0.00</div>
+                                <form th:action="@{'/cart/remove/' + ${item.cartItemId}}" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-link p-0 remove-btn" title="Remove from cart">
+                                        <i class="bi bi-trash"></i> Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cart Summary -->
+            <div class="col-lg-4">
+                <div class="cart-summary">
+                    <h4 class="mb-4">Order Summary</h4>
+                    
+                    <div class="summary-row">
+                        <span>Subtotal (<span th:text="${cartItemCount}">0</span> items):</span>
+                        <span th:text="'$' + ${#numbers.formatDecimal(cartTotal, 1, 2)}">$0.00</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span class="text-success">FREE</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Tax (estimated):</span>
+                        <span th:text="'$' + ${#numbers.formatDecimal(cartTotal * 0.0, 1, 2)}">$0.00</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <strong>Total:</strong>
+                        <strong th:text="'$' + ${#numbers.formatDecimal(cartTotal, 1, 2)}">$0.00</strong>
+                    </div>
+                    
+                    <button class="checkout-btn" onclick="alert('Checkout functionality coming soon!')">
+                        <i class="bi bi-lock-fill me-2"></i>Proceed to Checkout
+                    </button>
+                    
+                    <a th:href="@{/products}" class="btn continue-shopping-btn">
+                        <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                    
+                    <div class="mt-4 pt-3 border-top">
+                        <h6 class="text-muted mb-2"><i class="bi bi-shield-check me-2"></i>Secure Checkout</h6>
+                        <small class="text-muted">Your payment information is safe and secure.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Update quantity when input changes
+        function updateQuantity(input) {
+            const itemId = input.dataset.itemId;
+            const quantity = parseInt(input.value);
+            
+            if (quantity > 0) {
+                const form = document.createElement('form');
+                form.method = 'post';
+                form.action = '/cart/update/' + itemId;
+                
+                const quantityInput = document.createElement('input');
+                quantityInput.type = 'hidden';
+                quantityInput.name = 'quantity';
+                quantityInput.value = quantity;
+                
+                form.appendChild(quantityInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -47,6 +47,21 @@
                             Orders
                         </a>
                     </li>
+                    <li>
+                        <a th:href="@{/cart}" class="nav-link text-white position-relative">
+                            <svg class="bi d-block mx-auto mb-1 nav-icon" width="24" height="24" aria-hidden="true"
+                                 fill="white">
+                                <use xlink:href="/icons/bootstrap-icons.svg#cart3"></use>
+                            </svg>
+                            Cart
+                            <span th:if="${cartItemCount != null && cartItemCount > 0}" 
+                                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                  style="font-size: 0.65rem; margin-left: -10px;">
+                                <span th:text="${cartItemCount}">0</span>
+                                <span class="visually-hidden">items in cart</span>
+                            </span>
+                        </a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link text-white dropdown-toggle d-flex flex-column align-items-center"
                            href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"

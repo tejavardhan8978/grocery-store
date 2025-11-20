@@ -75,11 +75,16 @@
                                 <div class="card-actions">
                                     <div class="price-badge mb-2" th:text="'$' + ${#numbers.formatDecimal(product.price, 0, 2)}">$0.00</div>
                                     <div class="d-grid">
-                                        <button class="btn btn-primary btn-sm" 
-                                                th:disabled="${!product.isAvailable()}"
-                                                th:classappend="${!product.isAvailable()} ? 'disabled' : ''">
-                                            <i class="bi bi-cart-plus"></i> 
-                                            <span th:text="${product.isAvailable()} ? 'Add to Cart' : 'Out of Stock'">Add to Cart</span>
+                                        <form th:action="@{/cart/add}" method="post" th:if="${product.isAvailable()}">
+                                            <input type="hidden" name="productId" th:value="${product.productId}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <input type="hidden" name="returnUrl" value="/">
+                                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                                <i class="bi bi-cart-plus"></i> Add to Cart
+                                            </button>
+                                        </form>
+                                        <button th:unless="${product.isAvailable()}" class="btn btn-secondary btn-sm w-100" disabled>
+                                            <i class="bi bi-x-circle"></i> Out of Stock
                                         </button>
                                     </div>
                                 </div>
@@ -101,11 +106,16 @@
                                 <div class="card-actions">
                                     <div class="price-badge mb-2" th:text="'$' + ${#numbers.formatDecimal(product.price, 0, 2)}">$0.00</div>
                                     <div class="d-grid">
-                                        <button class="btn btn-primary btn-sm" 
-                                                th:disabled="${!product.isAvailable()}"
-                                                th:classappend="${!product.isAvailable()} ? 'disabled' : ''">
-                                            <i class="bi bi-cart-plus"></i> 
-                                            <span th:text="${product.isAvailable()} ? 'Add to Cart' : 'Out of Stock'">Add to Cart</span>
+                                        <form th:action="@{/cart/add}" method="post" th:if="${product.isAvailable()}">
+                                            <input type="hidden" name="productId" th:value="${product.productId}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <input type="hidden" name="returnUrl" value="/">
+                                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                                <i class="bi bi-cart-plus"></i> Add to Cart
+                                            </button>
+                                        </form>
+                                        <button th:unless="${product.isAvailable()}" class="btn btn-secondary btn-sm w-100" disabled>
+                                            <i class="bi bi-x-circle"></i> Out of Stock
                                         </button>
                                     </div>
                                 </div>
@@ -127,11 +137,16 @@
                                 <div class="card-actions">
                                     <div class="price-badge mb-2" th:text="'$' + ${#numbers.formatDecimal(product.price, 0, 2)}">$0.00</div>
                                     <div class="d-grid">
-                                        <button class="btn btn-primary btn-sm" 
-                                                th:disabled="${!product.isAvailable()}"
-                                                th:classappend="${!product.isAvailable()} ? 'disabled' : ''">
-                                            <i class="bi bi-cart-plus"></i> 
-                                            <span th:text="${product.isAvailable()} ? 'Add to Cart' : 'Out of Stock'">Add to Cart</span>
+                                        <form th:action="@{/cart/add}" method="post" th:if="${product.isAvailable()}">
+                                            <input type="hidden" name="productId" th:value="${product.productId}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <input type="hidden" name="returnUrl" value="/">
+                                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                                <i class="bi bi-cart-plus"></i> Add to Cart
+                                            </button>
+                                        </form>
+                                        <button th:unless="${product.isAvailable()}" class="btn btn-secondary btn-sm w-100" disabled>
+                                            <i class="bi bi-x-circle"></i> Out of Stock
                                         </button>
                                     </div>
                                 </div>

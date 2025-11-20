@@ -2,6 +2,7 @@ package edu.metro.grocerystore.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,56 +11,106 @@ import java.util.List;
 @Table(name="carts")
 public class Cart {
 
-
-    //Need to do this-> ? https://www.objectdb.com/java/jpa/entity/id https://stackoverflow.com/a/19813646 https://www.baeldung.com/spring-jpa-embedded-method-parameters
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="cart_id")
     private Integer cartId;
 
-
-    // List<Product> cartItems = new ArrayList<Product>();
-    //Things to note: lists can only be objects, List<int> won't work
-    // BUT if you try List<Integer> the compiler complains about hibernate or JPA or something as not a valid data type,
-    //to get around this we could type casting
-    ArrayList<CartItem> cartItem;
-
-
-    // Ref: https://www.geeksforgeeks.org/java/hibernate-primarykeyjoincolumn-annotation/
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private User users;
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", unique = true)
+    private User user;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CartItem> cartItems = new ArrayList<>();
 
     @Column(name="created_at")
-    Instant createdAt;
+    private Instant createdAt;
+
+    @Column(name="updated_at")
+    private Instant updatedAt;
 
 
     public Cart(){
-        this.cartItem = new ArrayList<CartItem>(0);
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    public Cart(User user) {
+        this.user = user;
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
     }
 
 
-    public List<CartItem> getCartItems() {return cartItem;}
-
-    public void setCartItems(ArrayList<CartItem> cartItems) {this.cartItem = cartItems;}
-
-    public boolean addProductById(Integer productId) {
-        //add product to user cart sql coding here?
-
-
-        return true;
+    // Getters and Setters
+    public Integer getCartId() {
+        return cartId;
     }
 
-    //Iterate through user cart using the quantities and prices from Product class
-    public Double getTotal() {
-            Double total = 0.00;
+    public void setCartId(Integer cartId) {
+        this.cartId = cartId;
+    }
 
-        for (CartItem item : this.getCartItems()) {
-            //TODO: Search for product id and multiply by the product price;
-            total += item.getQuantityPurchased();
-        }
+    public User getUser() {
+        return user;
+    }
 
-        return total;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<CartItem> getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(List<CartItem> cartItems) {
+        this.cartItems = cartItems;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
 
+    // Business methods
+    public BigDecimal getTotal() {
+        return cartItems.stream()
+                .map(CartItem::getSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public int getTotalItems() {
+        return cartItems.stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
+    }
+
+    public void addItem(CartItem item) {
+        cartItems.add(item);
+        item.setCart(this);
+        this.updatedAt = Instant.now();
+    }
+
+    public void removeItem(CartItem item) {
+        cartItems.remove(item);
+        item.setCart(null);
+        this.updatedAt = Instant.now();
+    }
+
+    public void clearCart() {
+        cartItems.clear();
+        this.updatedAt = Instant.now();
+    }
 }
