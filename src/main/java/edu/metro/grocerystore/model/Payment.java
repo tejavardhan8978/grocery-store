@@ -17,7 +17,7 @@ public class Payment {
 
     //Ref: https://medium.com/@iam03rv/best-way-to-map-an-enum-type-with-jpa-and-hibernate-with-examples-9974c856f33d
     @Enumerated(EnumType.STRING)
-    @Column(length=15)
+    @Column(length=17)
     private PaymentStatus paymentStatus;
 
     @Column(name="paid_amount")

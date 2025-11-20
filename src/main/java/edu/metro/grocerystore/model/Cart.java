@@ -16,6 +16,16 @@ public class Cart {
     @Column(name="cart_id")
     private Integer cartId;
 
+
+    // List<Product> cartItems = new ArrayList<Product>();
+    //Things to note: lists can only be objects, List<int> won't work
+    // BUT if you try List<Integer> the compiler complains about hibernate or JPA or something as not a valid data type,
+    //to get around this we could type casting
+    @OneToMany(mappedBy = "cart")
+    private List<CartItem> cartItem = new ArrayList<>();;
+
+
+    // Ref: https://www.geeksforgeeks.org/java/hibernate-primarykeyjoincolumn-annotation/
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", unique = true)
     private User user;
@@ -42,10 +52,7 @@ public class Cart {
     }
 
 
-    // Getters and Setters
-    public Integer getCartId() {
-        return cartId;
-    }
+    public void setCartItems(List<CartItem> cartItems) {this.cartItem = cartItems;}
 
     public void setCartId(Integer cartId) {
         this.cartId = cartId;

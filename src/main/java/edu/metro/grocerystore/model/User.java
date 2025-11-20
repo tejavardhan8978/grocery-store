@@ -3,6 +3,8 @@ package edu.metro.grocerystore.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -42,19 +44,27 @@ public class User implements Serializable {
     @Column(name = "is_admin")
     private boolean isAdmin;
 
+    @Column(name = "is_active")
+    private boolean isActive;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders = new ArrayList<>();
 
     public User() {}
 
-    public User(Integer userid, String firstName, String lastName, String email, String password, String phone, boolean isGuest, boolean isEmployee, boolean isAdmin) {
+    public User(Integer userid, String firstName, String lastName, String email, String password, String phone, ArrayList<Order> orders, boolean isGuest, boolean isEmployee, boolean isAdmin, boolean isActive) {
         this.userid = userid;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.phone = phone;
+        this.orders = orders;
         this.isGuest = isGuest;
         this.isEmployee = isEmployee;
         this.isAdmin = isAdmin;
+        this.isActive = isActive;
+
     }
 
     public Integer getId() {
@@ -120,5 +130,13 @@ public class User implements Serializable {
     public boolean isEmployee() {return isEmployee;}
 
     public void setEmployee(boolean employee) {isEmployee = employee;}
+
+    public boolean isActive() {return isActive;}
+
+    public void setActive(boolean active) {isActive = active;}
+
+    public List<Order> getOrders() {return orders;}
+
+    public void setOrders(List<Order> orders) {this.orders = orders;}
 
 }
