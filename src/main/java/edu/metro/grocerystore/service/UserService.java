@@ -1,5 +1,6 @@
 package edu.metro.grocerystore.service;
 
+import edu.metro.grocerystore.model.Order;
 import edu.metro.grocerystore.model.User;
 import edu.metro.grocerystore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -44,7 +46,7 @@ public class UserService {
         user.setGuest(false);
         user.setEmployee(false);
         user.setAdmin(false);
-        
+        user.setOrders(new ArrayList<Order>(0));
         return userRepository.save(user);
     }
     

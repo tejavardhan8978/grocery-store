@@ -1,5 +1,6 @@
 package edu.metro.grocerystore.service;
 
+import edu.metro.grocerystore.model.Order;
 import edu.metro.grocerystore.model.Product;
 import edu.metro.grocerystore.model.ProductCategory;
 import edu.metro.grocerystore.model.User;
@@ -13,6 +14,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -62,6 +64,7 @@ public class DataInitializer implements CommandLineRunner {
         regularUser.setGuest(false);
         regularUser.setEmployee(false);
         regularUser.setAdmin(false);
+        regularUser.setOrders(new ArrayList<Order>(0));
 
         // Create an admin user
         User adminUser = new User();
@@ -73,6 +76,7 @@ public class DataInitializer implements CommandLineRunner {
         adminUser.setGuest(false);
         adminUser.setEmployee(false);
         adminUser.setAdmin(true);
+        adminUser.setOrders(new ArrayList<Order>(0));
 
         // Create an employee user
         User employeeUser = new User();
@@ -84,6 +88,7 @@ public class DataInitializer implements CommandLineRunner {
         employeeUser.setGuest(false);
         employeeUser.setEmployee(true);
         employeeUser.setAdmin(false);
+        employeeUser.setOrders(new ArrayList<Order>(0));
 
         // Save users to database
         userRepository.save(regularUser);

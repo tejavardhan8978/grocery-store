@@ -13,9 +13,15 @@ public class CartItem {
     @Column(name="cart_item_id")
     private Integer cartItemId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="cart_id", nullable=false)
+    @Column(name="cartItem_id")
+    Integer cartItemId;
+
+    @ManyToOne
+    @JoinColumn(name="cart_id", insertable=false, updatable=false)
     private Cart cart;
+
+    @Column(name="product_id")
+    Integer productId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="product_id", nullable=false)

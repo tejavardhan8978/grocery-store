@@ -16,18 +16,12 @@ public class Order {
     @Column(name="order_id")
     private Integer orderId;
 
-    @Column(name="order_number", unique = true, nullable = false)
-    private String orderNumber;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name="user_id")
     private User user;
 
-    @Column(name="created_at", nullable = false)
+    @Column(name="created_at")
     private Instant createdAt;
-
-    @Column(name="updated_at")
-    private Instant updatedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name="order_status", length=20, nullable = false)
@@ -48,10 +42,9 @@ public class Order {
     public Order(){
     }
 
-    public Order(User user, OrderStatus status, String storeLocation){
+    public Order(User user, OrderStatus status){
         this.user = user;
-        this.orderStatus = status;
-        this.storeLocation = storeLocation;
+        this.orderstatus = status;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
         this.totalAmount = BigDecimal.ZERO;

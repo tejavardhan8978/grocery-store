@@ -4,5 +4,7 @@ public enum OrderStatus {
     ACTIVE,
     READY_TO_PICKUP,
     COMPLETED,
-    CANCELLED
+    CANCELLED,
+    REFUND_PROCESSING,
+    REFUNDED
 }
