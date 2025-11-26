@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - Grocery Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/headers.css}">
+    <style>
+        .confirmation-container {
+            max-width: 800px;
+            margin: 4rem auto;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 5rem;
+            color: #28a745;
+            margin-bottom: 2rem;
+        }
+        .error-icon {
+            font-size: 5rem;
+            color: #dc3545;
+            margin-bottom: 2rem;
+        }
+        .confirmation-card {
+            background-color: #fff;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .order-number {
+            font-size: 2rem;
+            color: #007bff;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: siteHeader(${user})}"></div>
+
+    <div class="container">
+        <div class="confirmation-container">
+            <!-- Success Confirmation -->
+            <div th:if="${success}" class="confirmation-card">
+                <div class="success-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <h1 class="mb-3">Order Placed Successfully!</h1>
+                <p class="lead mb-4">Thank you for your order. We've received your payment and are processing your order.</p>
+                
+                <div th:if="${order != null}" class="mb-4">
+                    <p class="mb-2">Your Order Number</p>
+                    <div class="order-number" th:text="${order.orderNumber}">ORD-123456</div>
+                    
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <p class="mb-2"><strong>Pickup Location:</strong></p>
+                        <p th:text="${order.storeLocation}">Store Address</p>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-info-circle me-1"></i>
+                            You'll receive a notification when your order is ready for pickup
+                        </p>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 col-md-6 mx-auto">
+                    <a th:if="${order != null}" 
+                       th:href="@{'/orders/' + ${order.orderId}}" 
+                       class="btn btn-primary btn-lg">
+                        <i class="bi bi-receipt me-2"></i>View Order Details
+                    </a>
+                    <a th:href="@{/orders}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-list-ul me-2"></i>View All Orders
+                    </a>
+                    <a th:href="@{/products}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+
+            <!-- Payment Failure -->
+            <div th:unless="${success}" class="confirmation-card">
+                <div class="error-icon">
+                    <i class="bi bi-x-circle-fill"></i>
+                </div>
+                <h1 class="mb-3">Payment Processing Failed</h1>
+                <p class="lead mb-4">We're sorry, but we were unable to process your payment at this time.</p>
+                
+                <div class="alert alert-warning text-start">
+                    <h5 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i>What happened?</h5>
+                    <p class="mb-0">Your payment could not be processed. This could be due to:</p>
+                    <ul class="mt-2 mb-0">
+                        <li>Insufficient funds</li>
+                        <li>Incorrect card information</li>
+                        <li>Card declined by your bank</li>
+                        <li>Temporary processing error</li>
+                    </ul>
+                </div>
+
+                <p class="mb-4">Your items are still in your cart. Please try again or contact your bank if the problem persists.</p>
+
+                <div class="d-grid gap-2 col-md-6 mx-auto">
+                    <a th:href="@{/cart}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-cart me-2"></i>Back to Cart
+                    </a>
+                    <a th:href="@{/checkout}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-arrow-repeat me-2"></i>Try Again
+                    </a>
+                    <a th:href="@{/products}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-grid-3x3-gap me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

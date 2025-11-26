@@ -38,8 +38,10 @@
                             Dashboard
                         </a>
                     </li>
-                    <li>
-                        <a href="#" class="nav-link text-white">
+                    <li th:with="displayUser=${headerUser != null ? headerUser : user}">
+                        <a th:if="${displayUser != null and not displayUser.isGuest()}" 
+                           th:href="@{/orders}" 
+                           class="nav-link text-white">
                             <svg class="bi d-block mx-auto mb-1 nav-icon" width="24" height="24" aria-hidden="true"
                                  fill="white">
                                 <use xlink:href="/icons/bootstrap-icons.svg#table"></use>
@@ -78,7 +80,7 @@
                             
                             <div class="row g-2">
                                 <div th:each="category : ${productCategories}" class="col-6 col-md-4 col-lg-3">
-                                    <a th:href="@{'/products/category/' + ${category.categoryId}}" 
+                                    <a th:href="@{/products(categoryId=${category.categoryId})}" 
                                        class="dropdown-item text-center p-3 border rounded" 
                                        style="text-decoration: none; transition: all 0.3s ease; border: 1px solid #e0e0e0; margin-bottom: 8px; display: block; height: 120px;"
                                        onmouseover="this.style.backgroundColor='#f8f9fa'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)';"
@@ -136,15 +138,24 @@
                         </div>
                     </li>
 
-                    <li>
-                        <a href="#" class="nav-link text-white" th:with="displayUser=${headerUser != null ? headerUser : user}">
+                    <li th:with="displayUser=${headerUser != null ? headerUser : user}">
+                        <a th:if="${displayUser != null and displayUser.isAdmin()}" 
+                           href="#" 
+                           class="nav-link text-white">
                             <svg class="bi d-block mx-auto mb-1 nav-icon" width="24" height="24" aria-hidden="true"
                                  fill="white">
-                                <use th:if="${displayUser != null and displayUser.isAdmin()}" xlink:href="/icons/bootstrap-icons.svg#person-video"></use>
-                                <use th:if="${displayUser == null or not displayUser.isAdmin()}" xlink:href="/icons/bootstrap-icons.svg#person"></use>
+                                <use xlink:href="/icons/bootstrap-icons.svg#person-video"></use>
                             </svg>
-                            <span th:if="${displayUser != null and displayUser.isAdmin()}" th:text="Customers"></span>
-                            <span th:if="${displayUser == null or not displayUser.isAdmin()}" th:text="Profile"></span>
+                            <span>Customers</span>
+                        </a>
+                        <a th:if="${displayUser != null and !displayUser.isGuest() and !displayUser.isAdmin()}" 
+                           th:href="@{/profile}" 
+                           class="nav-link text-white">
+                            <svg class="bi d-block mx-auto mb-1 nav-icon" width="24" height="24" aria-hidden="true"
+                                 fill="white">
+                                <use xlink:href="/icons/bootstrap-icons.svg#person"></use>
+                            </svg>
+                            <span>Profile</span>
                         </a>
                     </li>
                 </ul>

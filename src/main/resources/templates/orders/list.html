@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Grocery Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/headers.css}">
+    <style>
+        .order-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .status-badge {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .status-ACTIVE {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .status-READY_TO_PICKUP {
+            background-color: #198754;
+            color: white;
+        }
+        .status-COMPLETED {
+            background-color: #6c757d;
+            color: white;
+        }
+        .status-CANCELLED {
+            background-color: #dc3545;
+            color: white;
+        }
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .order-number {
+            font-weight: 600;
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: siteHeader(${user})}"></div>
+
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                <i class="bi bi-receipt"></i>
+                <span th:if="${isAdminOrEmployee}">All Orders</span>
+                <span th:unless="${isAdminOrEmployee}">My Orders</span>
+            </h1>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="filter-section">
+            <form method="get" th:action="@{/orders}">
+                <div class="row g-3">
+                    <!-- Search Bar -->
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Search by Product</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               th:value="${search}" placeholder="Search products in orders...">
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Filter by Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">All Statuses</option>
+                            <option th:each="orderStatus : ${orderStatuses}" 
+                                    th:value="${orderStatus}" 
+                                    th:text="${#strings.replace(orderStatus, '_', ' ')}"
+                                    th:selected="${orderStatus.toString() == status}"></option>
+                        </select>
+                    </div>
+
+                    <!-- Date Range Filter -->
+                    <div class="col-md-2">
+                        <label for="startDate" class="form-label">From Date</label>
+                        <input type="date" class="form-control" id="startDate" name="startDate" th:value="${startDate}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="endDate" class="form-label">To Date</label>
+                        <input type="date" class="form-control" id="endDate" name="endDate" th:value="${endDate}">
+                    </div>
+
+                    <!-- Apply Button -->
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel"></i> Filter
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Sort Options -->
+                <div class="row g-3 mt-2">
+                    <div class="col-md-3">
+                        <label for="sortBy" class="form-label">Sort By</label>
+                        <select class="form-select" id="sortBy" name="sortBy">
+                            <option value="createdAt" th:selected="${sortBy == 'createdAt'}">Date Created</option>
+                            <option value="orderNumber" th:selected="${sortBy == 'orderNumber'}">Order Number</option>
+                            <option value="totalAmount" th:selected="${sortBy == 'totalAmount'}">Total Amount</option>
+                            <option value="orderStatus" th:selected="${sortBy == 'orderStatus'}">Status</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="sortDirection" class="form-label">Direction</label>
+                        <select class="form-select" id="sortDirection" name="sortDirection">
+                            <option value="DESC" th:selected="${sortDirection == 'DESC'}">Descending</option>
+                            <option value="ASC" th:selected="${sortDirection == 'ASC'}">Ascending</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <a th:href="@{/orders}" class="btn btn-secondary w-100">
+                            <i class="bi bi-x-circle"></i> Clear
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Orders List -->
+        <div th:if="${orders.isEmpty()}" class="alert alert-info text-center">
+            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+            <p class="mb-0">No orders found</p>
+        </div>
+
+        <div class="row g-4" th:unless="${orders.isEmpty()}">
+            <div class="col-md-6 col-lg-4" th:each="order : ${orders}">
+                <div class="card order-card h-100" th:onclick="'window.location.href=\'/orders/' + ${order.orderId} + '\''">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="order-number" th:text="${order.orderNumber}">ORD-123456</span>
+                        <span class="badge status-badge" 
+                              th:classappend="'status-' + ${order.orderStatus}"
+                              th:text="${#strings.replace(order.orderStatus, '_', ' ')}">
+                            Status
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2" th:if="${isAdminOrEmployee}">
+                            <i class="bi bi-person"></i>
+                            <strong>Customer:</strong> <span th:text="${order.customerName}">Customer Name</span>
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-shop"></i>
+                            <strong>Store:</strong> <span th:text="${order.storeLocation}">Store Location</span>
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-calendar"></i>
+                            <strong>Ordered:</strong> <span th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy hh:mm a')}">Date</span>
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-cart"></i>
+                            <strong>Items:</strong> <span th:text="${order.totalItems}">0</span>
+                        </div>
+                        <div class="mb-0">
+                            <i class="bi bi-cash"></i>
+                            <strong>Total:</strong> <span class="text-success fw-bold" th:text="'$' + ${#numbers.formatDecimal(order.totalAmount, 0, 2)}">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a th:href="@{/orders/{id}(id=${order.orderId})}" class="btn btn-sm btn-outline-primary w-100">
+                            <i class="bi bi-eye"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav th:if="${totalPages > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/orders(page=${currentPage - 1}, size=${size}, sortBy=${sortBy}, sortDirection=${sortDirection}, status=${status}, startDate=${startDate}, endDate=${endDate}, search=${search})}">
+                        Previous
+                    </a>
+                </li>
+                
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/orders(page=${i}, size=${size}, sortBy=${sortBy}, sortDirection=${sortDirection}, status=${status}, startDate=${startDate}, endDate=${endDate}, search=${search})}" 
+                       th:text="${i + 1}">1</a>
+                </li>
+                
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/orders(page=${currentPage + 1}, size=${size}, sortBy=${sortBy}, sortDirection=${sortDirection}, status=${status}, startDate=${startDate}, endDate=${endDate}, search=${search})}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+            <p class="text-center text-muted">
+                Showing <span th:text="${orders.size()}">0</span> of <span th:text="${totalElements}">0</span> orders
+            </p>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -126,4 +126,44 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
      * @return number of active products in the category
      */
     long countByCategoryAndIsActiveTrue(ProductCategory category);
+    
+    /**
+     * Find all products (including inactive) - for admin/employee
+     * @param pageable pagination information
+     * @return page of all products
+     */
+    Page<Product> findAll(Pageable pageable);
+    
+    /**
+     * Search products (including inactive) by multiple criteria - for admin/employee
+     * @param searchTerm search term for name or description
+     * @param categoryId category filter (optional)
+     * @param minPrice minimum price filter (optional)
+     * @param maxPrice maximum price filter (optional)
+     * @param isActive active status filter (optional)
+     * @param inStock stock availability filter (optional)
+     * @param pageable pagination information
+     * @return page of matching products
+     */
+    @Query("SELECT p FROM Product p WHERE " +
+           "(:searchTerm IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(p.description) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) AND " +
+           "(:categoryId IS NULL OR p.category.categoryId = :categoryId) AND " +
+           "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
+           "(:maxPrice IS NULL OR p.price <= :maxPrice) AND " +
+           "(:isActive IS NULL OR p.isActive = :isActive) AND " +
+           "(:inStock IS NULL OR (:inStock = true AND p.quantity > 0) OR (:inStock = false AND p.quantity = 0))")
+    Page<Product> searchAllProducts(@Param("searchTerm") String searchTerm,
+                                    @Param("categoryId") Integer categoryId,
+                                    @Param("minPrice") BigDecimal minPrice,
+                                    @Param("maxPrice") BigDecimal maxPrice,
+                                    @Param("isActive") Boolean isActive,
+                                    @Param("inStock") Boolean inStock,
+                                    Pageable pageable);
+    
+    /**
+     * Get the maximum price of all products
+     * @return maximum product price
+     */
+    @Query("SELECT MAX(p.price) FROM Product p")
+    BigDecimal findMaxPrice();
 }

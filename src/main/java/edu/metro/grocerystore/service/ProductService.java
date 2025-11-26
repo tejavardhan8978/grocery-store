@@ -227,4 +227,54 @@ public class ProductService {
         }
         return 0;
     }
+    
+    /**
+     * Get all products (including inactive) with pagination - for admin/employee
+     * @param page page number (0-based)
+     * @param size page size
+     * @param sortBy field to sort by
+     * @param sortDirection sort direction (ASC/DESC)
+     * @return page of all products
+     */
+    public Page<Product> getAllProducts(int page, int size, String sortBy, String sortDirection) {
+        Sort sort = sortDirection.equalsIgnoreCase("DESC") ? 
+                   Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return productRepository.findAll(pageable);
+    }
+    
+    /**
+     * Search all products (including inactive) with filters - for admin/employee
+     * @param searchTerm search term for name or description
+     * @param categoryId category filter (optional)
+     * @param minPrice minimum price filter (optional)
+     * @param maxPrice maximum price filter (optional)
+     * @param isActive active status filter (optional)
+     * @param inStock stock availability filter (optional)
+     * @param page page number (0-based)
+     * @param size page size
+     * @param sortBy field to sort by
+     * @param sortDirection sort direction (ASC/DESC)
+     * @return page of matching products
+     */
+    public Page<Product> searchAllProducts(String searchTerm, Integer categoryId, 
+                                          BigDecimal minPrice, BigDecimal maxPrice,
+                                          Boolean isActive, Boolean inStock,
+                                          int page, int size, String sortBy, String sortDirection) {
+        Sort sort = sortDirection.equalsIgnoreCase("DESC") ? 
+                   Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        
+        return productRepository.searchAllProducts(searchTerm, categoryId, 
+                                                  minPrice, maxPrice, isActive, inStock, pageable);
+    }
+    
+    /**
+     * Get the maximum price of all products
+     * @return maximum product price or BigDecimal.ZERO if no products
+     */
+    public BigDecimal getMaxPrice() {
+        BigDecimal maxPrice = productRepository.findMaxPrice();
+        return maxPrice != null ? maxPrice : BigDecimal.ZERO;
+    }
 }

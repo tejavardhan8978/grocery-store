@@ -216,4 +216,16 @@ public class CartService {
         Optional<Cart> cartOpt = cartRepository.findByUser(user);
         return cartOpt.map(Cart::getTotal).orElse(BigDecimal.ZERO);
     }
+    
+    /**
+     * Get cart items for user
+     */
+    public java.util.List<CartItem> getCartItems(User user) {
+        if (user == null || user.isGuest()) {
+            return java.util.Collections.emptyList();
+        }
+        
+        Optional<Cart> cartOpt = cartRepository.findByUser(user);
+        return cartOpt.map(Cart::getCartItems).orElse(java.util.Collections.emptyList());
+    }
 }

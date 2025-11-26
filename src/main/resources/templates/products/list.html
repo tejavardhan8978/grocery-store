@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Grocery Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/headers.css}">
+    <style>
+        .filters-section {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .product-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            height: 100%;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .product-image-placeholder {
+            width: 100%;
+            height: 200px;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .product-price {
+            color: #28a745;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .product-category {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        .out-of-stock {
+            opacity: 0.6;
+        }
+        .inactive-badge {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        .stock-badge {
+            font-size: 0.75rem;
+        }
+        .price-slider {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: siteHeader(${user})}"></div>
+
+    <div class="container my-5">
+        <h1 class="mb-4">
+            <i class="bi bi-grid-3x3-gap me-2"></i>Products
+            <span th:if="${selectedCategory != null}" th:text="' - ' + ${selectedCategory.name}"></span>
+        </h1>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <form method="get" th:action="@{/products}" id="filterForm">
+                <div class="row g-3">
+                    <!-- Search Bar -->
+                    <div class="col-md-4">
+                        <label for="search" class="form-label"><i class="bi bi-search"></i> Search</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               th:value="${search}" placeholder="Search products...">
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="col-md-4">
+                        <label for="categoryId" class="form-label"><i class="bi bi-tag"></i> Category</label>
+                        <select class="form-select" id="categoryId" name="categoryId">
+                            <option value="">All Categories</option>
+                            <option th:each="category : ${categories}" 
+                                    th:value="${category.categoryId}" 
+                                    th:text="${category.name}"
+                                    th:selected="${categoryId != null && categoryId == category.categoryId}"></option>
+                        </select>
+                    </div>
+
+                    <!-- Sort By -->
+                    <div class="col-md-2">
+                        <label for="sortBy" class="form-label"><i class="bi bi-sort-down"></i> Sort By</label>
+                        <select class="form-select" id="sortBy" name="sortBy">
+                            <option value="name" th:selected="${sortBy == 'name'}">Name</option>
+                            <option value="price" th:selected="${sortBy == 'price'}">Price</option>
+                            <option value="quantity" th:selected="${sortBy == 'quantity'}">Stock</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort Direction -->
+                    <div class="col-md-2">
+                        <label for="sortDirection" class="form-label"><i class="bi bi-arrow-down-up"></i> Order</label>
+                        <select class="form-select" id="sortDirection" name="sortDirection">
+                            <option value="ASC" th:selected="${sortDirection == 'ASC'}">Ascending</option>
+                            <option value="DESC" th:selected="${sortDirection == 'DESC'}">Descending</option>
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="col-md-6">
+                        <label for="priceRange" class="form-label">
+                            <i class="bi bi-currency-dollar"></i> Price Range: 
+                            <span id="priceRangeLabel">$0 - $<span th:text="${maxPriceAvailable}">100</span></span>
+                        </label>
+                        <div class="d-flex gap-2 align-items-center">
+                            <input type="number" class="form-control" id="minPrice" name="minPrice" 
+                                   th:value="${minPrice}" placeholder="Min" min="0" 
+                                   th:max="${maxPriceAvailable}" step="0.01">
+                            <span>-</span>
+                            <input type="number" class="form-control" id="maxPrice" name="maxPrice" 
+                                   th:value="${maxPrice != null ? maxPrice : maxPriceAvailable}" 
+                                   placeholder="Max" min="0" th:max="${maxPriceAvailable}" step="0.01">
+                        </div>
+                    </div>
+
+                    <!-- In Stock Filter -->
+                    <div class="col-md-3">
+                        <label class="form-label"><i class="bi bi-box"></i> Availability</label>
+                        <select class="form-select" name="inStock">
+                            <option value="">All Products</option>
+                            <option value="true" th:selected="${inStock != null && inStock}">In Stock</option>
+                            <option value="false" th:selected="${inStock != null && !inStock}">Out of Stock</option>
+                        </select>
+                    </div>
+
+                    <!-- Active Filter (Admin/Employee Only) -->
+                    <div class="col-md-3" th:if="${isAdminOrEmployee}">
+                        <label class="form-label"><i class="bi bi-toggle-on"></i> Status</label>
+                        <select class="form-select" name="isActive">
+                            <option value="">All Status</option>
+                            <option value="true" th:selected="${isActive != null && isActive}">Active</option>
+                            <option value="false" th:selected="${isActive != null && !isActive}">Inactive</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter Buttons -->
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-funnel"></i> Apply Filters
+                        </button>
+                        <a th:href="@{/products}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Clear Filters
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Info -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="text-muted mb-0">
+                Showing <strong th:text="${#lists.size(products)}">0</strong> of 
+                <strong th:text="${totalElements}">0</strong> products
+            </p>
+            <div>
+                <span class="text-muted">Page <strong th:text="${currentPage + 1}">1</strong> of <strong th:text="${totalPages}">1</strong></span>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div th:if="${products != null && !products.isEmpty()}" class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4 mb-4">
+            <div th:each="product : ${products}" class="col">
+                <div class="card product-card" 
+                     th:classappend="${product.quantity == 0 ? 'out-of-stock' : ''}"
+                     th:onclick="'window.location.href=\'/products/' + ${product.productId} + '\''">
+                    <div>
+                        <img th:src="${product.imageUrl != null && !product.imageUrl.isEmpty() ? product.imageUrl : '/images/placeholder.png'}"
+                             th:alt="${product.name}"
+                             class="product-image">
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0" th:text="${product.name}">Product Name</h5>
+                            <span th:if="${!product.isActive}" class="inactive-badge">Inactive</span>
+                        </div>
+                        <p class="product-category mb-2">
+                            <i class="bi bi-tag-fill"></i> <span th:text="${product.category.name}">Category</span>
+                        </p>
+                        <p class="card-text text-truncate" th:text="${product.description}">Product description</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="product-price" th:text="'$' + ${#numbers.formatDecimal(product.price, 0, 2)}">$0.00</span>
+                            <span th:if="${product.quantity > 0}" 
+                                  class="badge bg-success stock-badge"
+                                  th:text="${product.quantity} + ' in stock'">In Stock</span>
+                            <span th:unless="${product.quantity > 0}" 
+                                  class="badge bg-danger stock-badge">Out of Stock</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${products == null || products.isEmpty()}" class="text-center py-5">
+            <i class="bi bi-inbox" style="font-size: 4rem; color: #dee2e6;"></i>
+            <h3 class="mt-3">No Products Found</h3>
+            <p class="text-muted">Try adjusting your filters or search criteria.</p>
+            <a th:href="@{/products}" class="btn btn-primary">View All Products</a>
+        </div>
+
+        <!-- Pagination -->
+        <nav th:if="${totalPages > 1}" aria-label="Products pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/products(page=${currentPage - 1}, size=${size}, sortBy=${sortBy}, sortDirection=${sortDirection}, search=${search}, categoryId=${categoryId}, minPrice=${minPrice}, maxPrice=${maxPrice}, inStock=${inStock}, isActive=${isActive})}">
+                        Previous
+                    </a>
+                </li>
+                
+                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
+                    th:if="${i >= currentPage - 2 && i <= currentPage + 2}"
+                    class="page-item" 
+                    th:classappend="${i == currentPage ? 'active' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/products(page=${i}, size=${size}, sortBy=${sortBy}, sortDirection=${sortDirection}, search=${search}, categoryId=${categoryId}, minPrice=${minPrice}, maxPrice=${maxPrice}, inStock=${inStock}, isActive=${isActive})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+                
+                <li class="page-item" th:classappend="${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                    <a class="page-link" 
+                       th:href="@{/products(page=${currentPage + 1}, size=${size}, sortBy=${sortBy}, sortDirection=${sortDirection}, search=${search}, categoryId=${categoryId}, minPrice=${minPrice}, maxPrice=${maxPrice}, inStock=${inStock}, isActive=${isActive})}">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

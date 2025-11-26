@@ -32,6 +32,8 @@ public class Product {
 
     @Column(name="image_url")
     private String imageUrl;
+    
+    // Images are served from static resources now; keep only imageUrl
 
     @Column(name="is_active")
     private Boolean isActive = true;
@@ -116,6 +118,7 @@ public class Product {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+    
 
     public Boolean getIsActive() {
         return isActive;

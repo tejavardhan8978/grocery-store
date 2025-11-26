@@ -32,6 +32,18 @@ public class User implements Serializable {
 
     @Column(name = "phone_number")
     private String phone;
+    
+    @Column(name = "address")
+    private String address;
+    
+    @Column(name = "city")
+    private String city;
+    
+    @Column(name = "state")
+    private String state;
+    
+    @Column(name = "zip_code")
+    private String zipCode;
 
     @Column(name = "is_guest")
     private boolean isGuest;
@@ -45,13 +57,19 @@ public class User implements Serializable {
 
     public User() {}
 
-    public User(Integer userid, String firstName, String lastName, String email, String password, String phone, boolean isGuest, boolean isEmployee, boolean isAdmin) {
+    public User(Integer userid, String firstName, String lastName, String email, String password, String phone, 
+                String address, String city, String state, String zipCode,
+                boolean isGuest, boolean isEmployee, boolean isAdmin) {
         this.userid = userid;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.phone = phone;
+        this.address = address;
+        this.city = city;
+        this.state = state;
+        this.zipCode = zipCode;
         this.isGuest = isGuest;
         this.isEmployee = isEmployee;
         this.isAdmin = isAdmin;
@@ -103,6 +121,38 @@ public class User implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+    
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
     public boolean isGuest() {

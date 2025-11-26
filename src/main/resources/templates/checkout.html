@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Grocery Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/headers.css}">
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .checkout-section {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .order-summary {
+            position: sticky;
+            top: 20px;
+        }
+        .product-item {
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+        }
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .loading-overlay.show {
+            display: flex;
+        }
+        .loading-content {
+            background-color: white;
+            padding: 3rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: siteHeader(${user})}"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Processing...</span>
+            </div>
+            <h4>Processing Your Order...</h4>
+            <p class="text-muted">Please wait while we process your payment</p>
+        </div>
+    </div>
+
+    <div class="container checkout-container my-5">
+        <h1 class="mb-4"><i class="bi bi-credit-card me-2"></i>Checkout</h1>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row">
+            <!-- Checkout Form -->
+            <div class="col-lg-8">
+                <form id="checkoutForm" th:action="@{/orders/checkout}" method="post" onsubmit="return handleCheckout(event)">
+                    <!-- Billing Address -->
+                    <div class="checkout-section">
+                        <h4 class="mb-3"><i class="bi bi-house-door me-2"></i>Billing Address</h4>
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-info-circle me-1"></i>This information is not stored and is only used for billing purposes
+                        </p>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="address" class="form-label">Street Address *</label>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">City *</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="state" class="form-label">State *</label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="">Choose...</option>
+                                    <option value="MN" selected>Minnesota</option>
+                                    <option value="WI">Wisconsin</option>
+                                    <option value="IA">Iowa</option>
+                                    <option value="ND">North Dakota</option>
+                                    <option value="SD">South Dakota</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="zip" class="form-label">ZIP Code *</label>
+                                <input type="text" class="form-control" id="zip" name="zip" pattern="[0-9]{5}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Information -->
+                    <div class="checkout-section">
+                        <h4 class="mb-3"><i class="bi bi-credit-card-2-front me-2"></i>Payment Information</h4>
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-shield-check me-1"></i>Your payment information is secure and not stored
+                        </p>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="cardNumber" class="form-label">Card Number *</label>
+                                <input type="text" class="form-control" id="cardNumber" name="cardNumber" 
+                                       pattern="[0-9]{16}" maxlength="16" placeholder="1234567890123456" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cardName" class="form-label">Name on Card *</label>
+                                <input type="text" class="form-control" id="cardName" name="cardName" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="expiryDate" class="form-label">Expiry (MM/YY) *</label>
+                                <input type="text" class="form-control" id="expiryDate" name="expiryDate" 
+                                       pattern="[0-9]{2}/[0-9]{2}" placeholder="12/25" maxlength="5" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="cvv" class="form-label">CVV *</label>
+                                <input type="text" class="form-control" id="cvv" name="cvv" 
+                                       pattern="[0-9]{3,4}" maxlength="4" placeholder="123" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pickup Location -->
+                    <div class="checkout-section">
+                        <h4 class="mb-3"><i class="bi bi-shop me-2"></i>Pickup Location</h4>
+                        <div class="mb-3">
+                            <label for="storeLocation" class="form-label">Select Store *</label>
+                            <select class="form-select" id="storeLocation" name="storeLocation" required>
+                                <option value="">Choose a store...</option>
+                                <option value="700 E 7th St, St Paul, MN 55106" selected>Main Store - 700 E 7th St, St Paul, MN 55106</option>
+                            </select>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            You will receive a notification when your order is ready for pickup
+                        </div>
+                    </div>
+
+                    <!-- Order Notes -->
+                    <div class="checkout-section">
+                        <h4 class="mb-3"><i class="bi bi-sticky me-2"></i>Order Notes (Optional)</h4>
+                        <textarea class="form-control" name="notes" rows="3" 
+                                  placeholder="Any special instructions or notes..."></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-lock-fill me-2"></i>Place Order
+                        </button>
+                        <a th:href="@{/cart}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Cart
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="checkout-section order-summary">
+                    <h4 class="mb-3"><i class="bi bi-receipt me-2"></i>Order Summary</h4>
+                    
+                    <!-- Cart Items -->
+                    <div class="mb-3">
+                        <div th:each="item : ${cartItems}" class="product-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1" th:text="${item.product.name}">Product</h6>
+                                    <small class="text-muted">Qty: <span th:text="${item.quantity}">1</span></small>
+                                </div>
+                                <div class="fw-bold" th:text="'$' + ${#numbers.formatDecimal(item.subTotal, 0, 2)}">$0.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Totals -->
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span th:text="'$' + ${#numbers.formatDecimal(cartTotal, 0, 2)}">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax:</span>
+                        <span>$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span class="text-success">FREE</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong class="fs-5">Total:</strong>
+                        <strong class="fs-5 text-success" th:text="'$' + ${#numbers.formatDecimal(cartTotal, 0, 2)}">$0.00</strong>
+                    </div>
+
+                    <div class="text-muted small">
+                        <i class="bi bi-shield-check me-1"></i>Secure payment processing
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function handleCheckout(event) {
+            event.preventDefault();
+            
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.add('show');
+            
+            // Simulate 2-second processing delay
+            setTimeout(function() {
+                // Submit the form after 2 seconds
+                event.target.submit();
+            }, 2000);
+            
+            return false;
+        }
+
+        // Format credit card number
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Format expiry date
+        document.getElementById('expiryDate').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Format CVV
+        document.getElementById('cvv').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    </script>
+</body>
+</html>

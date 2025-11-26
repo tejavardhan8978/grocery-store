@@ -3,14 +3,18 @@ package edu.metro.grocerystore.controller;
 import edu.metro.grocerystore.DTO.ProductSearchCriteria;
 import edu.metro.grocerystore.model.Product;
 import edu.metro.grocerystore.model.ProductCategory;
+import edu.metro.grocerystore.model.User;
 import edu.metro.grocerystore.service.ProductService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+// image responses removed; images are served from static resources
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -38,6 +42,14 @@ public class ProductController extends BaseController {
     }
     
     /**
+     * Helper method to check if current user is admin or employee
+     */
+    private boolean isAdminOrEmployee(HttpSession session) {
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        return loggedInUser != null && (loggedInUser.isAdmin() || loggedInUser.isEmployee());
+    }
+    
+    /**
      * Display all products
      */
     @GetMapping("/products")
@@ -50,17 +62,28 @@ public class ProductController extends BaseController {
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) Boolean inStock,
+            HttpSession session,
             Model model) {
         
         Page<Product> productsPage;
+        boolean isAdminOrEmployee = isAdminOrEmployee(session);
         
-        // If search or filters are provided, use search functionality
-        if (search != null || categoryId != null || minPrice != null || maxPrice != null) {
-            ProductSearchCriteria criteria = new ProductSearchCriteria(search, categoryId, minPrice, maxPrice,
-                                                                       page, size, sortBy, sortDirection);
-            productsPage = productService.searchProducts(criteria);
+        // Admin/Employee can see all products, customers see only active products
+        if (isAdminOrEmployee) {
+            // Search with all filters including isActive and inStock
+            productsPage = productService.searchAllProducts(search, categoryId, minPrice, maxPrice,
+                                                           isActive, inStock, page, size, sortBy, sortDirection);
         } else {
-            productsPage = productService.getAllActiveProducts(page, size, sortBy, sortDirection);
+            // Customers only see active, in-stock products
+            if (search != null || categoryId != null || minPrice != null || maxPrice != null) {
+                ProductSearchCriteria criteria = new ProductSearchCriteria(search, categoryId, minPrice, maxPrice,
+                                                                           page, size, sortBy, sortDirection);
+                productsPage = productService.searchProducts(criteria);
+            } else {
+                productsPage = productService.getAllActiveProducts(page, size, sortBy, sortDirection);
+            }
         }
         
         model.addAttribute(PRODUCTS_ATTR, productsPage.getContent());
@@ -74,10 +97,17 @@ public class ProductController extends BaseController {
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("isActive", isActive);
+        model.addAttribute("inStock", inStock);
+        model.addAttribute("isAdminOrEmployee", isAdminOrEmployee);
         
         // Add categories for filter dropdown
         List<ProductCategory> categories = productCategoryService.getAllCategories();
         model.addAttribute(CATEGORIES_ATTR, categories);
+        
+        // Get max price for price slider
+        BigDecimal maxPriceAvailable = productService.getMaxPrice();
+        model.addAttribute("maxPriceAvailable", maxPriceAvailable);
         
         return PRODUCTS_LIST_VIEW;
     }
@@ -140,7 +170,7 @@ public class ProductController extends BaseController {
      * Display product details
      */
     @GetMapping("/products/{id}")
-    public String getProductDetails(@PathVariable Integer id, Model model) {
+    public String getProductDetails(@PathVariable Integer id, Model model, HttpSession session) {
         Optional<Product> productOpt = productService.getProductById(id);
         if (productOpt.isEmpty()) {
             return "redirect:/products";
@@ -148,6 +178,7 @@ public class ProductController extends BaseController {
         
         Product product = productOpt.get();
         model.addAttribute("product", product);
+        model.addAttribute("isAdminOrEmployee", isAdminOrEmployee(session));
         
         // Get related products from the same category
         List<Product> relatedProducts = productService.getProductsByCategory(product.getCategory().getCategoryId());
@@ -202,5 +233,144 @@ public class ProductController extends BaseController {
         List<Product> featuredProducts = productService.getFeaturedProducts(limit);
         model.addAttribute("featuredProducts", featuredProducts);
         return "fragments/featured-products";
+    }
+    
+    /**
+     * Update product quantity (Admin/Employee only)
+     */
+    @PostMapping("/products/{id}/update-quantity")
+    public String updateProductQuantity(@PathVariable Integer id, 
+                                       @RequestParam Integer quantity,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        if (!isAdminOrEmployee(session)) {
+            redirectAttributes.addFlashAttribute("error", "Unauthorized access");
+            return "redirect:/products/" + id;
+        }
+        
+        try {
+            Optional<Product> productOpt = productService.getProductById(id);
+            if (productOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Product not found");
+                return "redirect:/products";
+            }
+            
+            Product product = productOpt.get();
+            product.setQuantity(quantity);
+            productService.updateProduct(product);
+            
+            redirectAttributes.addFlashAttribute("success", "Product quantity updated successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to update product quantity: " + e.getMessage());
+        }
+        
+        return "redirect:/products/" + id;
+    }
+    
+    /**
+     * Toggle product active status (Admin/Employee only)
+     */
+    @PostMapping("/products/{id}/toggle-active")
+    public String toggleProductActive(@PathVariable Integer id,
+                                      HttpSession session, 
+                                      RedirectAttributes redirectAttributes) {
+        if (!isAdminOrEmployee(session)) {
+            redirectAttributes.addFlashAttribute("error", "Unauthorized access");
+            return "redirect:/products/" + id;
+        }
+        
+        try {
+            Optional<Product> productOpt = productService.getProductById(id);
+            if (productOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Product not found");
+                return "redirect:/products";
+            }
+            
+            Product product = productOpt.get();
+            product.setIsActive(!product.getIsActive());
+            productService.updateProduct(product);
+            
+            String status = product.getIsActive() ? "activated" : "deactivated";
+            redirectAttributes.addFlashAttribute("success", "Product " + status + " successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to update product status: " + e.getMessage());
+        }
+        
+        return "redirect:/products/" + id;
+    }
+    
+    // Product images are served from static resources under /images
+    
+    /**
+     * Display add product form (Admin only)
+     */
+    @GetMapping("/admin/products/add")
+    public String showAddProductForm(Model model, HttpSession session) {
+        if (!isAdminOrEmployee(session)) {
+            return "redirect:/products";
+        }
+        
+        model.addAttribute("product", new Product());
+        List<ProductCategory> categories = productCategoryService.getAllCategories();
+        model.addAttribute(CATEGORIES_ATTR, categories);
+        
+        return "admin/add-product";
+    }
+    
+    /**
+     * Handle product creation (Admin only)
+     */
+    @PostMapping("/admin/products/add")
+    public String addProduct(@RequestParam String name,
+                            @RequestParam String sku,
+                            @RequestParam BigDecimal price,
+                            @RequestParam Integer quantity,
+                            @RequestParam(required = false) Integer reorderLevel,
+                            @RequestParam(required = false) String description,
+                            @RequestParam Integer categoryId,
+                            @RequestParam(required = false) MultipartFile imageFile,
+                            HttpSession session,
+                            RedirectAttributes redirectAttributes) {
+        if (!isAdminOrEmployee(session)) {
+            redirectAttributes.addFlashAttribute("error", "Unauthorized access");
+            return "redirect:/products";
+        }
+        
+        try {
+            // Check if SKU already exists
+            if (productService.getProductBySku(sku).isPresent()) {
+                redirectAttributes.addFlashAttribute("error", "Product with SKU " + sku + " already exists");
+                return "redirect:/admin/products/add";
+            }
+            
+            // Get category
+            Optional<ProductCategory> categoryOpt = productCategoryService.findById(categoryId);
+            if (categoryOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Invalid category selected");
+                return "redirect:/admin/products/add";
+            }
+            
+            // Create product
+            Product product = new Product();
+            product.setName(name);
+            product.setSku(sku);
+            product.setPrice(price);
+            product.setQuantity(quantity);
+            product.setReorderLevel(reorderLevel);
+            product.setDescription(description);
+            product.setCategory(categoryOpt.get());
+            product.setIsActive(true);
+            
+            // Image uploads are no longer stored in the database.
+            // To use an image, set `imageUrl` to a static path under `/images` (e.g. `/images/products/filename.jpg`).
+            
+            Product savedProduct = productService.createProduct(product);
+            redirectAttributes.addFlashAttribute("success", "Product added successfully");
+            return "redirect:/products/" + savedProduct.getProductId();
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to add product: " + e.getMessage());
+            return "redirect:/admin/products/add";
+        }
     }
 }

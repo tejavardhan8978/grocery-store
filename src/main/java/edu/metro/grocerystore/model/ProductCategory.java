@@ -75,5 +75,10 @@ public class ProductCategory {
     public void setCategoryDescription(String categoryDescription) {
         this.categoryDescription = categoryDescription;
     }
+    
+    // Convenience method for templates
+    public String getName() {
+        return categoryName;
+    }
 }
 

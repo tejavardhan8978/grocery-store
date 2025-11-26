@@ -58,6 +58,15 @@ public class UserService {
     }
     
     /**
+     * Get user by ID (alias for findById for consistency)
+     * @param id user ID
+     * @return Optional containing the user if found
+     */
+    public Optional<User> getUserById(Integer id) {
+        return userRepository.findById(id);
+    }
+    
+    /**
      * Find user by email
      * @param email user's email
      * @return Optional containing the user if found
