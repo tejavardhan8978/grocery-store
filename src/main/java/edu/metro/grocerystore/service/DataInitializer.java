@@ -159,6 +159,8 @@ public class DataInitializer implements CommandLineRunner {
         ProductCategory personalCare = productCategoryRepository.findByCategoryName("Personal Care").orElse(null);
         
         // Create sample products for each category
+        //Typical amounts and abbreviations; oz = ounces, 1 gallon = 128oz, count = ct
+        //TODO: Manual - Mention description gets cut off in browsing view, individual item page will not get cut off
         if (fruits != null) {
             createProduct("Organic Apples", "APPLE-001", new BigDecimal("3.99"), 100, 
                          "Fresh organic red apples", "/images/products/apples.jpg", fruits);
@@ -166,6 +168,10 @@ public class DataInitializer implements CommandLineRunner {
                          "Fresh yellow bananas", "/images/products/bananas.jpg", fruits);
             createProduct("Strawberries", "STRAWB-001", new BigDecimal("4.99"), 75, 
                          "Sweet fresh strawberries", "/images/products/strawberries.jpg", fruits);
+            createProduct("Organic Blueberries", "BLUEB-001", new BigDecimal("5.99"), 40,
+                    "Fresh organic blueberries", "/images/products/blueberries.jpg", fruits);
+            createProduct("Wild Blueberries", "BLUEB-002", new BigDecimal("8.99"), 15,
+                    "Fresh wild blueberries", "/images/products/blueberries-2.jpg", fruits);
         }
         
         if (vegetables != null) {
@@ -175,15 +181,26 @@ public class DataInitializer implements CommandLineRunner {
                          "Fresh baby spinach leaves", "/images/products/spinach.jpg", vegetables);
             createProduct("Bell Peppers", "PEPPER-001", new BigDecimal("4.49"), 90, 
                          "Colorful bell peppers", "/images/products/peppers.jpg", vegetables);
+            createProduct("Cilantro", "CILANTRO-001", new BigDecimal("4.49"), 25,
+                    "Fresh cilantro", "/images/products/cilantro.jpg", vegetables);
+            createProduct("Parsley", "PARSLEY-001", new BigDecimal("3.49"), 30,
+                    "Fresh parsley", "/images/products/parsley.jpg", vegetables);
+            createProduct("Tomatoes", "TOMATO-001", new BigDecimal("2.99"), 35,
+                    "Fresh tomatoes", "/images/products/tomatoes.jpg", vegetables);
         }
         
         if (dairy != null) {
             createProduct("Organic Milk", "MILK-001", new BigDecimal("4.99"), 40, 
-                         "Fresh organic whole milk", "/images/products/milk.jpg", dairy);
+                         "Fresh organic whole milk, 1 gallon", "/images/products/milk.jpg", dairy);
             createProduct("Greek Yogurt", "YOGURT-001", new BigDecimal("5.99"), 35, 
                          "Plain Greek yogurt", "/images/products/yogurt.jpg", dairy);
             createProduct("Cheddar Cheese", "CHEESE-001", new BigDecimal("6.99"), 50, 
                          "Sharp cheddar cheese block", "/images/products/cheese.jpg", dairy);
+            createProduct("Almond Milk", "MILK-002", new BigDecimal("4.49"), 20,
+                    "Almond milk, 64oz", "/images/products/milk-2.jpg", dairy);
+            createProduct("Shredded Cheddar Cheese", "CHEESE-002", new BigDecimal("4.99"), 24,
+                    "Shredded cheddar cheese, 8oz", "/images/products/cheese-2.jpg", dairy);
+
         }
         
         if (meat != null) {
@@ -193,6 +210,10 @@ public class DataInitializer implements CommandLineRunner {
                          "Lean ground beef", "/images/products/beef.jpg", meat);
             createProduct("Salmon Fillet", "SALMON-001", new BigDecimal("12.99"), 20, 
                          "Fresh Atlantic salmon fillet", "/images/products/salmon.jpg", meat);
+            createProduct("Turkey Breast Slices", "TURKEY-001", new BigDecimal("5.99"), 25,
+                    "Fresh turkey breast slices, 16oz", "/images/products/turkey.jpg", meat);
+            createProduct("Ham Slices", "HAM-001", new BigDecimal("5.99"), 20,
+                    "Fresh ham slices, 16oz", "/images/products/ham.jpg", meat);
         }
         
         if (bakery != null) {
@@ -202,6 +223,10 @@ public class DataInitializer implements CommandLineRunner {
                          "Buttery French croissants", "/images/products/croissants.jpg", bakery);
             createProduct("Bagels", "BAGEL-001", new BigDecimal("3.99"), 40, 
                          "Fresh everything bagels", "/images/products/bagels.jpg", bakery);
+            createProduct("Doughnuts", "DOUGHNUT-001", new BigDecimal("5.99"), 25,
+                    "Fresh doughnuts", "/images/products/doughnuts.jpg", bakery);
+            createProduct("Tortillas", "TORTILLA-001", new BigDecimal("5.49"), 35,
+                    "Fresh tortillas, 8ct", "/images/products/tortillas.jpg", bakery);
         }
         
         if (beverages != null) {
@@ -209,8 +234,12 @@ public class DataInitializer implements CommandLineRunner {
                          "Fresh squeezed orange juice", "/images/products/orange-juice.jpg", beverages);
             createProduct("Coffee Beans", "COFFEE-001", new BigDecimal("12.99"), 35, 
                          "Premium coffee beans", "/images/products/coffee.jpg", beverages);
-            createProduct("Sparkling Water", "WATER-001", new BigDecimal("1.99"), 100, 
+            createProduct("Sparkling Water", "WATER-001", new BigDecimal("1.99"), 100,
                          "Natural sparkling water", "/images/products/sparkling-water.jpg", beverages);
+            createProduct("Spring Water", "WATER-002", new BigDecimal("1.99"), 88,
+                    "Bottled spring water, 16.9oz", "/images/products/spring-water.jpg", beverages);
+            createProduct("Green Tea", "TEA-001", new BigDecimal("5.49"), 40,
+                    "Green tea bags, 8ct", "/images/products/tea.jpg", beverages);
         }
         
         if (snacks != null) {
@@ -220,6 +249,10 @@ public class DataInitializer implements CommandLineRunner {
                          "Premium mixed nuts", "/images/products/nuts.jpg", snacks);
             createProduct("Chocolate Bar", "CHOC-001", new BigDecimal("3.49"), 55, 
                          "Dark chocolate bar", "/images/products/chocolate.jpg", snacks);
+            createProduct("Roasted Salted Almond Nuts", "NUTS-002", new BigDecimal("7.49"), 20,
+                    "Roasted & Salted almonds, 14oz", "/images/products/nuts-2.jpg", snacks);
+            createProduct("Honey Granola Bars", "BARS-001", new BigDecimal("7.49"), 25,
+                    "Honey granola bars, 6ct", "/images/products/bars.jpg", snacks);
         }
         
         if (frozen != null) {
@@ -229,6 +262,10 @@ public class DataInitializer implements CommandLineRunner {
                          "Vanilla ice cream", "/images/products/ice-cream.jpg", frozen);
             createProduct("Frozen Vegetables", "FVEG-001", new BigDecimal("3.99"), 40, 
                          "Mixed frozen vegetables", "/images/products/frozen-veg.jpg", frozen);
+            createProduct("Berry Variety Popsicles", "POPSICLE-001", new BigDecimal("5.99"), 20,
+                    "Variety berry popsicles, 5ct", "/images/products/popsicle.jpg", frozen);
+            createProduct("Frozen Corn", "FVEG-002", new BigDecimal("2.99"), 40,
+                    "Frozen sweet corn, 32oz", "/images/products/frozen-veg-2.jpg", frozen);
         }
         
         if (household != null) {
@@ -238,6 +275,10 @@ public class DataInitializer implements CommandLineRunner {
                          "Absorbent paper towels", "/images/products/paper-towels.jpg", household);
             createProduct("Laundry Detergent", "DETERG-001", new BigDecimal("11.99"), 25, 
                          "Liquid laundry detergent", "/images/products/detergent.jpg", household);
+            createProduct("Toilet Paper", "TPAPER-001", new BigDecimal("8.99"), 35,
+                    "Toilet paper, 6 rolls", "/images/products/toilet-paper.jpg", household);
+            createProduct("Bleach", "BLEACH-001", new BigDecimal("6.49"), 20,
+                    "Liquid bleach, 81oz", "/images/products/bleach.jpg", household);
         }
         
         if (personalCare != null) {
@@ -247,6 +288,10 @@ public class DataInitializer implements CommandLineRunner {
                          "Fluoride toothpaste", "/images/products/toothpaste.jpg", personalCare);
             createProduct("Body Lotion", "LOTION-001", new BigDecimal("6.99"), 35, 
                          "Moisturizing body lotion", "/images/products/lotion.jpg", personalCare);
+            createProduct("Tanning Oil", "TANOIL-001", new BigDecimal("9.99"), 12,
+                    "Tanning Oil, 8oz", "/images/products/tanoil.jpg", personalCare);
+            createProduct("Conditioner", "CONDIT-001", new BigDecimal("4.99"), 35,
+                    "Conditioner for hair, 12 oz", "/images/products/conditioner.jpg", personalCare);
         }
         
         logger.info("Sample products created for all categories");
