@@ -39,6 +39,7 @@ public class ProfileController extends BaseController {
         User currentUser = userService.getUserById(loggedInUser.getId())
             .orElse(loggedInUser);
 
+        // Override the user from BaseController with fresh data from database
         model.addAttribute("user", currentUser);
         return "profile";
     }

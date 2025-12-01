@@ -41,8 +41,7 @@ public class CartController extends BaseController {
         
         Cart cart = cartService.getOrCreateCart(loggedInUser);
         
-        model.addAttribute("user", loggedInUser);
-        model.addAttribute("headerUser", loggedInUser);
+        // BaseController automatically adds user to model
         model.addAttribute("cart", cart);
         model.addAttribute("cartItems", cart.getCartItems());
         model.addAttribute("cartTotal", cart.getTotal());

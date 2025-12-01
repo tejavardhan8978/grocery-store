@@ -28,14 +28,11 @@ public class RegisterController extends BaseController {
             return "redirect:/";
         }
         
-        // Create a new user object for the form
-        User user = new User();
-        model.addAttribute("user", user);
+        // Create a new user object for the form (override the user from BaseController for this specific use case)
+        User formUser = new User();
+        model.addAttribute("user", formUser);
         
-        // Create a guest user for header display
-        User guestUser = userService.createGuestUser();
-        model.addAttribute("headerUser", guestUser);
-        
+        // BaseController automatically adds current user (guest) to model
         return "register";
     }
 

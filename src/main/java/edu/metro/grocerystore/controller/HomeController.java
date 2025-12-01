@@ -23,17 +23,7 @@ public class HomeController extends BaseController {
 
     @GetMapping("/")
     public String getHome(Model model, HttpSession session) {
-        // Check if user is logged in via session
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        
-        if (loggedInUser == null) {
-            // Create a guest user for non-authenticated sessions
-            User guestUser = userService.createGuestUser();
-            model.addAttribute("user", guestUser);
-        } else {
-            // User is logged in, add their information to the model
-            model.addAttribute("user", loggedInUser);
-        }
+        // BaseController automatically adds user to model
         
         // Add dynamic product data for the homepage
         model.addAttribute("featuredProducts", productService.getFeaturedProducts(12));

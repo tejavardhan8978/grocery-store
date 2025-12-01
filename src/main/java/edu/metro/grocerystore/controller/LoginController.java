@@ -30,11 +30,7 @@ public class LoginController extends BaseController {
             return "redirect:/";
         }
         
-        // Create a guest user for header display
-        User guestUser = userService.createGuestUser();
-        model.addAttribute("user", guestUser);
-        model.addAttribute("headerUser", guestUser);
-        
+        // BaseController automatically adds user to model
         return "login";
     }
 
@@ -64,15 +60,13 @@ public class LoginController extends BaseController {
             } else {
                 // Authentication failed
                 model.addAttribute("error", "Invalid email or password");
-                User guestUser = userService.createGuestUser();
-                model.addAttribute("user", guestUser);
+                // BaseController automatically adds guest user to model
                 return "login";
             }
         } catch (Exception e) {
             // Handle any database or service errors
             model.addAttribute("error", "An error occurred during login. Please try again.");
-            User guestUser = userService.createGuestUser();
-            model.addAttribute("user", guestUser);
+            // BaseController automatically adds guest user to model
             return "login";
         }
     }

@@ -77,8 +77,7 @@ public class AdminController extends BaseController {
             return REDIRECT_HOME;
         }
         
-        User loggedInUser = (User) session.getAttribute(LOGGED_IN_USER_ATTR);
-        model.addAttribute(HEADER_USER_ATTR, loggedInUser);
+        // BaseController automatically adds user to model
         
         return "admin/dashboard";
     }
@@ -101,8 +100,7 @@ public class AdminController extends BaseController {
             return "redirect:/";
         }
         
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        model.addAttribute("headerUser", loggedInUser);
+        // BaseController automatically adds user to model
         
         // Create pageable with sorting
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
@@ -142,8 +140,7 @@ public class AdminController extends BaseController {
             return "redirect:/";
         }
         
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        model.addAttribute("headerUser", loggedInUser);
+        // BaseController automatically adds user to model
         
         Optional<User> userOpt = userService.findById(id);
         if (userOpt.isEmpty()) {
