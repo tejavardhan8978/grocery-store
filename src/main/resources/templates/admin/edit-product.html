@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Product - Admin</title>
+    <title>Edit Product - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" th:href="@{/css/headers.css}">
@@ -16,12 +16,12 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .image-preview {
-            max-width: 100%;
-            max-height: 300px;
-            margin-top: 1rem;
+        .current-image {
+            max-width: 200px;
+            max-height: 150px;
+            margin-top: 0.5rem;
             border-radius: 8px;
-            display: none;
+            border: 1px solid #dee2e6;
         }
     </style>
 </head>
@@ -32,7 +32,7 @@
     <div class="container my-5">
         <div class="form-container">
             <h1 class="mb-4">
-                <i class="bi bi-plus-circle"></i> Add New Product
+                <i class="bi bi-pencil-square"></i> Edit Product
             </h1>
 
             <!-- Success/Error Messages -->
@@ -45,14 +45,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
-            <form th:action="@{/admin/products/add}" method="post">
+            <form th:action="@{'/admin/products/' + ${product.productId} + '/edit'}" method="post">
                 <!-- Product Name -->
                 <div class="mb-3">
                     <label for="name" class="form-label">
                         <i class="bi bi-tag"></i> Product Name <span class="text-danger">*</span>
                     </label>
                     <input type="text" class="form-control" id="name" name="name" required 
-                           placeholder="Enter product name">
+                           th:value="${product.name}" placeholder="Enter product name">
                 </div>
 
                 <!-- SKU -->
@@ -61,7 +61,7 @@
                         <i class="bi bi-upc-scan"></i> SKU <span class="text-danger">*</span>
                     </label>
                     <input type="text" class="form-control" id="sku" name="sku" required 
-                           placeholder="e.g., PROD-001">
+                           th:value="${product.sku}" placeholder="e.g., PROD-001">
                     <div class="form-text">Stock Keeping Unit - must be unique</div>
                 </div>
 
@@ -74,7 +74,8 @@
                         <option value="">Select a category...</option>
                         <option th:each="category : ${categories}" 
                                 th:value="${category.categoryId}" 
-                                th:text="${category.categoryName}"></option>
+                                th:text="${category.categoryName}"
+                                th:selected="${category.categoryId == product.category.categoryId}"></option>
                     </select>
                 </div>
 
@@ -87,17 +88,17 @@
                         <div class="input-group">
                             <span class="input-group-text">$</span>
                             <input type="number" class="form-control" id="price" name="price" 
-                                   step="0.01" min="0" required placeholder="0.00">
+                                   step="0.01" min="0" required th:value="${product.price}" placeholder="0.00">
                         </div>
                     </div>
 
                     <!-- Quantity -->
                     <div class="col-md-6 mb-3">
                         <label for="quantity" class="form-label">
-                            <i class="bi bi-box"></i> Initial Quantity <span class="text-danger">*</span>
+                            <i class="bi bi-box"></i> Stock Quantity <span class="text-danger">*</span>
                         </label>
                         <input type="number" class="form-control" id="quantity" name="quantity" 
-                               min="0" required placeholder="0">
+                               min="0" required th:value="${product.quantity}" placeholder="0">
                     </div>
                 </div>
 
@@ -107,7 +108,7 @@
                         <i class="bi bi-arrow-repeat"></i> Reorder Level
                     </label>
                     <input type="number" class="form-control" id="reorderLevel" name="reorderLevel" 
-                           min="0" placeholder="Low stock threshold (optional)">
+                           min="0" th:value="${product.reorderLevel}" placeholder="Low stock threshold (optional)">
                     <div class="form-text">Alert when stock falls below this level</div>
                 </div>
 
@@ -117,7 +118,7 @@
                         <i class="bi bi-card-text"></i> Description
                     </label>
                     <textarea class="form-control" id="description" name="description" rows="4" 
-                              placeholder="Enter product description (optional)"></textarea>
+                              placeholder="Enter product description (optional)" th:text="${product.description}"></textarea>
                 </div>
 
                 <!-- Image URL -->
@@ -126,16 +127,23 @@
                         <i class="bi bi-image"></i> Image URL
                     </label>
                     <input type="url" class="form-control" id="imageUrl" name="imageUrl" 
-                           placeholder="e.g., /images/products/product.jpg">
+                           th:value="${product.imageUrl}" placeholder="e.g., /images/products/product.jpg">
                     <div class="form-text">Path to static image file under /images directory</div>
+                    
+                    <!-- Current Image Preview -->
+                    <div th:if="${product.imageUrl != null && !product.imageUrl.isEmpty()}">
+                        <label class="form-label mt-2">Current Image:</label>
+                        <br>
+                        <img th:src="${product.imageUrl}" th:alt="${product.name}" class="current-image">
+                    </div>
                 </div>
 
                 <!-- Buttons -->
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-circle"></i> Add Product
+                        <i class="bi bi-check-circle"></i> Update Product
                     </button>
-                    <a th:href="@{/products}" class="btn btn-secondary">
+                    <a th:href="@{'/products/' + ${product.productId}}" class="btn btn-secondary">
                         <i class="bi bi-x-circle"></i> Cancel
                     </a>
                 </div>
@@ -144,8 +152,5 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Image URL input - no preview needed since images are static files
-    </script>
 </body>
 </html>

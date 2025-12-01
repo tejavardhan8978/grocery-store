@@ -302,6 +302,92 @@ public class ProductController extends BaseController {
     // Product images are served from static resources under /images
     
     /**
+     * Display edit product form (Admin only)
+     */
+    @GetMapping("/admin/products/{id}/edit")
+    public String showEditProductForm(@PathVariable Integer id, Model model, HttpSession session) {
+        if (!isAdminOrEmployee(session)) {
+            return "redirect:/products";
+        }
+        
+        Optional<Product> productOpt = productService.getProductById(id);
+        if (productOpt.isEmpty()) {
+            return "redirect:/products";
+        }
+        
+        model.addAttribute("product", productOpt.get());
+        List<ProductCategory> categories = productCategoryService.getAllCategories();
+        model.addAttribute(CATEGORIES_ATTR, categories);
+        
+        return "admin/edit-product";
+    }
+    
+    /**
+     * Handle product update (Admin only)
+     */
+    @PostMapping("/admin/products/{id}/edit")
+    public String updateProduct(@PathVariable Integer id,
+                               @RequestParam String name,
+                               @RequestParam String sku,
+                               @RequestParam BigDecimal price,
+                               @RequestParam Integer quantity,
+                               @RequestParam(required = false) Integer reorderLevel,
+                               @RequestParam(required = false) String description,
+                               @RequestParam(required = false) String imageUrl,
+                               @RequestParam Integer categoryId,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+        if (!isAdminOrEmployee(session)) {
+            redirectAttributes.addFlashAttribute("error", "Unauthorized access");
+            return "redirect:/products";
+        }
+        
+        try {
+            Optional<Product> productOpt = productService.getProductById(id);
+            if (productOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Product not found");
+                return "redirect:/products";
+            }
+            
+            Product product = productOpt.get();
+            
+            // Check if SKU is being changed and if it already exists for another product
+            if (!product.getSku().equals(sku)) {
+                Optional<Product> existingProduct = productService.getProductBySku(sku);
+                if (existingProduct.isPresent() && !existingProduct.get().getProductId().equals(id)) {
+                    redirectAttributes.addFlashAttribute("error", "Product with SKU " + sku + " already exists");
+                    return "redirect:/admin/products/" + id + "/edit";
+                }
+            }
+            
+            // Get category
+            Optional<ProductCategory> categoryOpt = productCategoryService.findById(categoryId);
+            if (categoryOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Invalid category selected");
+                return "redirect:/admin/products/" + id + "/edit";
+            }
+            
+            // Update product
+            product.setName(name);
+            product.setSku(sku);
+            product.setPrice(price);
+            product.setQuantity(quantity);
+            product.setReorderLevel(reorderLevel);
+            product.setDescription(description);
+            product.setImageUrl(imageUrl);
+            product.setCategory(categoryOpt.get());
+            
+            productService.updateProduct(product);
+            redirectAttributes.addFlashAttribute("success", "Product updated successfully");
+            return "redirect:/products/" + product.getProductId();
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to update product: " + e.getMessage());
+            return "redirect:/admin/products/" + id + "/edit";
+        }
+    }
+    
+    /**
      * Display add product form (Admin only)
      */
     @GetMapping("/admin/products/add")
@@ -327,8 +413,8 @@ public class ProductController extends BaseController {
                             @RequestParam Integer quantity,
                             @RequestParam(required = false) Integer reorderLevel,
                             @RequestParam(required = false) String description,
+                            @RequestParam(required = false) String imageUrl,
                             @RequestParam Integer categoryId,
-                            @RequestParam(required = false) MultipartFile imageFile,
                             HttpSession session,
                             RedirectAttributes redirectAttributes) {
         if (!isAdminOrEmployee(session)) {
@@ -358,11 +444,9 @@ public class ProductController extends BaseController {
             product.setQuantity(quantity);
             product.setReorderLevel(reorderLevel);
             product.setDescription(description);
+            product.setImageUrl(imageUrl);
             product.setCategory(categoryOpt.get());
             product.setIsActive(true);
-            
-            // Image uploads are no longer stored in the database.
-            // To use an image, set `imageUrl` to a static path under `/images` (e.g. `/images/products/filename.jpg`).
             
             Product savedProduct = productService.createProduct(product);
             redirectAttributes.addFlashAttribute("success", "Product added successfully");

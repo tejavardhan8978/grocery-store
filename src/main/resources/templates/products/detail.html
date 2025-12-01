@@ -162,6 +162,13 @@
                         <i class="bi bi-gear-fill"></i> Admin Controls
                     </h5>
 
+                    <!-- Edit Product Button -->
+                    <div class="mb-3">
+                        <a th:href="@{'/admin/products/' + ${product.productId} + '/edit'}" class="btn btn-primary">
+                            <i class="bi bi-pencil-square"></i> Edit Product Details
+                        </a>
+                    </div>
+
                     <!-- Update Quantity -->
                     <form th:action="@{'/products/' + ${product.productId} + '/update-quantity'}" method="post" class="mb-3">
                         <label for="quantity" class="form-label"><strong>Update Stock Quantity:</strong></label>

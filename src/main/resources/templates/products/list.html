@@ -177,7 +177,11 @@
                 Showing <strong th:text="${#lists.size(products)}">0</strong> of 
                 <strong th:text="${totalElements}">0</strong> products
             </p>
-            <div>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Add Product Button (Admin/Employee Only) -->
+                <a th:if="${isAdminOrEmployee}" th:href="@{/admin/products/add}" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-circle"></i> Add Product
+                </a>
                 <span class="text-muted">Page <strong th:text="${currentPage + 1}">1</strong> of <strong th:text="${totalPages}">1</strong></span>
             </div>
         </div>
