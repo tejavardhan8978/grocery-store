@@ -29,15 +29,15 @@
                             Home
                         </a>
                     </li>
-                    <li>
-                        <a href="#" class="nav-link text-white">
-                            <svg class="bi d-block mx-auto mb-1 nav-icon" width="24" height="24" aria-hidden="true"
-                                 fill="white">
-                                <use xlink:href="/icons/bootstrap-icons.svg#speedometer2"></use>
-                            </svg>
-                            Dashboard
-                        </a>
-                    </li>
+<!--                    <li>-->
+<!--                        <a href="#" class="nav-link text-white">-->
+<!--                            <svg class="bi d-block mx-auto mb-1 nav-icon" width="24" height="24" aria-hidden="true"-->
+<!--                                 fill="white">-->
+<!--                                <use xlink:href="/icons/bootstrap-icons.svg#speedometer2"></use>-->
+<!--                            </svg>-->
+<!--                            Dashboard-->
+<!--                        </a>-->
+<!--                    </li>-->
                     <li th:with="displayUser=${headerUser != null ? headerUser : user}">
                         <a th:if="${displayUser != null and not displayUser.isGuest()}" 
                            th:href="@{/orders}" 
@@ -117,10 +117,10 @@
                                         </div>
                                         
                                         <!-- Category Description (if available) -->
-                                        <div th:if="${category.categoryDescription != null and !#strings.isEmpty(category.categoryDescription)}" 
-                                             style="font-size: 0.75rem; color: #6c757d; margin-top: 4px; line-height: 1.1;">
-                                            <span th:text="${#strings.abbreviate(category.categoryDescription, 30)}">Description</span>
-                                        </div>
+<!--                                        <div th:if="${category.categoryDescription != null and !#strings.isEmpty(category.categoryDescription)}" -->
+<!--                                             style="font-size: 0.75rem; color: #6c757d; margin-top: 4px; line-height: 1.1;">-->
+<!--                                            <span th:text="${#strings.abbreviate(category.categoryDescription, 30)}">Description</span>-->
+<!--                                        </div>-->
                                     </a>
                                 </div>
                             </div>

@@ -105,8 +105,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
            "(:categoryId IS NULL OR p.category.categoryId = :categoryId) AND " +
            "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
            "(:maxPrice IS NULL OR p.price <= :maxPrice) AND " +
-           "p.isActive = true " +
-           "ORDER BY p.name ASC")
+           "p.isActive = true")
     Page<Product> searchProducts(@Param("searchTerm") String searchTerm,
                                 @Param("categoryId") Integer categoryId,
                                 @Param("minPrice") BigDecimal minPrice,
